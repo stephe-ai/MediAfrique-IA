@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0A6EFF">
+<title>MediAfrique — Santé pour tous</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --p:#0A6EFF;--pd:#0052CC;--pl:#E8F1FF;--pm:#99C0FF;
+  --ink:#0D0D0D;--g1:#3D3D3D;--g2:#767676;--g3:#B0B0B0;--g4:#E8E8E8;--g5:#F5F5F5;
+  --white:#FFFFFF;
+  --ok:#00A86B;--okl:#E6F9F3;
+  --err:#E03434;--errl:#FDEAEA;
+  --warn:#E08C00;--warnl:#FFF6E6;
+  --r8:8px;--r12:12px;--r16:16px;--r20:20px;
+}
+body{font-family:'Manrope',sans-serif;background:var(--g5);color:var(--ink);min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* ── GATE ── */
+#gate{position:fixed;inset:0;z-index:9999;background:#fff;display:flex;flex-direction:column;overflow-y:auto;}
+#gate.off{display:none;}
+
+.gate-top{background:var(--p);padding:48px 24px 36px;text-align:center;}
+.gate-icon{width:64px;height:64px;background:rgba(255,255,255,.18);border-radius:18px;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+.gate-icon svg{width:32px;height:32px;}
+.gate-app{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.3px;}
+.gate-tagline{font-size:13px;color:rgba(255,255,255,.7);margin-top:4px;font-weight:500;}
+
+.gate-body{flex:1;padding:28px 20px 40px;}
+.gate-heading{font-size:20px;font-weight:800;color:var(--ink);margin-bottom:4px;}
+.gate-sub{font-size:13px;color:var(--g2);margin-bottom:24px;line-height:1.6;}
+
+.fi{margin-bottom:16px;}
+.fi label{display:block;font-size:11px;font-weight:700;color:var(--g2);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;}
+.fi input{width:100%;padding:14px 16px;border-radius:var(--r12);border:1.5px solid var(--g4);background:#fff;color:var(--ink);font-size:15px;font-family:'Manrope',sans-serif;font-weight:500;outline:none;transition:border-color .2s;}
+.fi input:focus{border-color:var(--p);}
+.fi input.err{border-color:var(--err);}
+
+.gbtn{width:100%;padding:16px;border-radius:var(--r12);border:none;background:var(--p);color:#fff;font-family:'Manrope',sans-serif;font-size:16px;font-weight:800;cursor:pointer;transition:all .18s;margin-top:4px;}
+.gbtn:active{background:var(--pd);transform:scale(.98);}
+.gbtn.sec{background:transparent;color:var(--p);border:1.5px solid var(--p);margin-top:10px;}
+
+.code-wrap{display:flex;gap:8px;margin-bottom:0;}
+.code-box{flex:1;height:56px;border-radius:var(--r12);border:1.5px solid var(--g4);background:#fff;font-size:22px;font-weight:800;text-align:center;color:var(--ink);font-family:'Manrope',sans-serif;outline:none;transition:all .2s;}
+.code-box:focus{border-color:var(--p);}
+.code-box.filled{border-color:var(--p);background:var(--pl);}
+.code-box.shake{animation:shake .3s ease;}
+
+.gate-link{font-size:13px;color:var(--p);font-weight:700;text-align:center;display:block;margin-top:14px;cursor:pointer;}
+.gate-note{font-size:12px;color:var(--g3);text-align:center;margin-top:16px;line-height:1.7;}
+.step-dots{display:flex;justify-content:center;gap:6px;margin-bottom:22px;}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--g4);}
+.sdot.on{background:var(--p);width:20px;border-radius:3px;}
+
+/* ── HEADER ── */
+header{background:#fff;border-bottom:1px solid var(--g4);position:sticky;top:0;z-index:200;}
+.hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;}
+.hdr-logo{width:36px;height:36px;background:var(--p);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.hdr-logo svg{width:18px;height:18px;}
+.hdr-title{font-size:17px;font-weight:800;color:var(--ink);}
+.hdr-title span{color:var(--p);}
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.hdr-chip{display:flex;align-items:center;gap:6px;background:var(--pl);border-radius:20px;padding:5px 10px 5px 6px;cursor:pointer;}
+.hdr-av{width:24px;height:24px;border-radius:50%;background:var(--p);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;}
+.hdr-name{font-size:12px;font-weight:700;color:var(--p);}
+.hdr-gear{width:34px;height:34px;border-radius:10px;border:1.5px solid var(--g4);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.hdr-gear svg{width:16px;height:16px;color:var(--g2);}
+
+/* ── NAV ── */
+.nav{background:#fff;border-bottom:1px solid var(--g4);overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-row{display:flex;padding:0 8px;}
+.nb{padding:13px 12px 11px;border:none;background:none;font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;color:var(--g2);white-space:nowrap;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .18s;display:flex;align-items:center;gap:5px;}
+.nb.active{color:var(--p);border-bottom-color:var(--p);}
+.nb-ico{font-size:15px;}
+
+/* ── MAIN ── */
+.wrap{padding:16px 14px 90px;max-width:680px;margin:0 auto;}
+.page{display:none;}
+.page.active{display:block;animation:up .2s ease;}
+@keyframes up{from{opacity:0;transform:translateY(5px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── HERO HOME ── */
+.home-hero{background:var(--p);border-radius:var(--r20);padding:22px 20px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden;}
+.home-hero::after{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,.07);border-radius:50%;}
+.home-hero-label{font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:8px;}
+.home-hero-title{font-size:24px;font-weight:800;line-height:1.25;letter-spacing:-.3px;margin-bottom:8px;position:relative;}
+.home-hero-sub{font-size:13px;color:rgba(255,255,255,.7);line-height:1.7;position:relative;}
+
+/* ── QUICK ACTIONS ── */
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.qa{background:#fff;border-radius:var(--r16);padding:16px;cursor:pointer;transition:all .15s;border:1.5px solid var(--g4);}
+.qa:active{transform:scale(.97);}
+.qa-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.qa-icon svg{width:20px;height:20px;}
+.qai-b{background:var(--pl);}
+.qai-r{background:var(--errl);}
+.qai-g{background:var(--okl);}
+.qai-w{background:var(--warnl);}
+.qa-title{font-size:14px;font-weight:800;color:var(--ink);margin-bottom:2px;}
+.qa-sub{font-size:11px;color:var(--g2);line-height:1.4;}
+.qa-arr{font-size:11px;font-weight:700;color:var(--p);margin-top:8px;display:flex;align-items:center;gap:3px;}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:var(--r16);padding:18px;margin-bottom:12px;border:1px solid var(--g4);}
+.card-hd{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--g4);}
+.card-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-ico svg{width:20px;height:20px;}
+.cib{background:var(--pl);}
+.cir{background:var(--errl);}
+.cig{background:var(--okl);}
+.ciw{background:var(--warnl);}
+.card-title{font-size:16px;font-weight:800;color:var(--ink);}
+.card-sub{font-size:12px;color:var(--g2);margin-top:2px;}
+
+/* ── FORM ── */
+.lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--g2);margin-bottom:6px;}
+input[type=text],input[type=number],input[type=email],select,textarea{
+  width:100%;padding:13px 16px;border-radius:var(--r12);
+  border:1.5px solid var(--g4);background:var(--g5);
+  color:var(--ink);font-size:14px;font-family:'Manrope',sans-serif;
+  font-weight:500;outline:none;margin-bottom:12px;
+  transition:border-color .2s,background .2s;appearance:none;
+}
+input:focus,select:focus,textarea:focus{border-color:var(--p);background:#fff;}
+textarea{resize:vertical;min-height:88px;line-height:1.6;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23767676' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-color:var(--g5);padding-right:36px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* ── BUTTONS ── */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:var(--r12);border:none;cursor:pointer;font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;transition:all .15s;}
+.btn:active{transform:scale(.97);}
+.btn-p{background:var(--p);color:#fff;}
+.btn-ok{background:var(--ok);color:#fff;}
+.btn-err{background:var(--err);color:#fff;}
+
+/* ── CHIPS ── */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 14px;}
+.chip{padding:8px 14px;border-radius:20px;cursor:pointer;border:1.5px solid var(--g4);background:#fff;color:var(--g2);font-size:12px;font-weight:700;transition:all .15s;}
+.chip.on{border-color:var(--p);background:var(--pl);color:var(--p);}
+.chip-sm{padding:7px 12px;font-size:11px;}
+
+/* ── SPINNER ── */
+.spin{width:26px;height:26px;margin:20px auto;border:3px solid var(--pl);border-top-color:var(--p);border-radius:50%;animation:rot .6s linear infinite;display:none;}
+.spin.on{display:block;}
+@keyframes rot{to{transform:rotate(360deg);}}
+
+/* ── RESULT ── */
+.rbox{border-radius:var(--r12);padding:16px;margin-top:12px;font-size:13px;line-height:1.9;white-space:pre-wrap;display:none;color:var(--ink);font-weight:500;}
+.rb{background:var(--pl);border:1.5px solid var(--pm);}
+.rg{background:var(--okl);border:1.5px solid rgba(0,168,107,.2);}
+.rr{background:var(--errl);border:1.5px solid rgba(224,52,52,.15);}
+
+/* ── PRESCRIPTION ── */
+.rx{background:#fff;border:2px solid var(--p);border-radius:var(--r16);padding:18px;margin-top:14px;display:none;}
+.rx-hd{display:flex;align-items:center;gap:12px;padding-bottom:13px;border-bottom:1px dashed var(--g4);margin-bottom:14px;}
+.rx-logo{width:42px;height:42px;background:var(--p);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rx-logo svg{width:21px;height:21px;}
+.rx-name{font-size:15px;font-weight:800;color:var(--p);}
+.rx-sub{font-size:11px;color:var(--g2);margin-top:1px;}
+.rx-badges{margin-left:auto;display:flex;flex-direction:column;gap:3px;}
+.rx-badge{background:var(--pl);border:1px solid var(--pm);border-radius:6px;padding:2px 8px;font-size:9px;font-weight:800;color:var(--p);text-align:center;}
+.rx-body{font-size:13px;line-height:1.9;white-space:pre-wrap;color:var(--ink);}
+.rx-foot{margin-top:13px;padding-top:12px;border-top:1px dashed var(--g4);font-size:10px;color:var(--g2);text-align:center;line-height:1.8;}
+
+/* ── URGENCE ── */
+.urg-banner{background:var(--err);border-radius:var(--r16);padding:16px 18px;margin-bottom:14px;display:flex;gap:14px;align-items:center;color:#fff;}
+.urg-num{font-size:28px;font-weight:800;line-height:1.1;}
+.urg-label{font-size:11px;font-weight:700;opacity:.75;margin-bottom:3px;}
+.urg-desc{font-size:11px;opacity:.65;}
+.alarm{display:flex;gap:12px;padding:13px 14px;border-radius:var(--r12);margin-bottom:8px;}
+.al-r{background:var(--errl);border:1px solid rgba(224,52,52,.15);}
+.al-w{background:var(--warnl);border:1px solid rgba(224,140,0,.15);}
+.alarm-t{font-size:13px;font-weight:700;}
+.alarm-d{font-size:12px;color:var(--g2);margin-top:2px;line-height:1.5;}
+
+/* ── PHARMACY ── */
+.ph-top{background:#fff;border-radius:var(--r16);border:1px solid var(--g4);padding:18px;margin-bottom:12px;display:flex;align-items:center;gap:16px;}
+.ph-clock-wrap{text-align:center;}
+.ph-clock{font-size:32px;font-weight:800;color:var(--ink);letter-spacing:2px;line-height:1;}
+.ph-day{font-size:11px;color:var(--g2);margin-top:3px;font-weight:600;}
+.ph-divider{width:1px;background:var(--g4);align-self:stretch;}
+.ph-status{flex:1;}
+.ph-count{font-size:18px;font-weight:800;color:var(--ok);}
+.ph-count-sub{font-size:12px;color:var(--g2);margin-top:2px;}
+.ph-search-wrap{position:relative;margin-bottom:0;}
+.ph-ico{position:absolute;left:14px;top:50%;transform:translateY(-55%);color:var(--g3);}
+.ph-ico svg{width:16px;height:16px;}
+.ph-search-wrap input{padding-left:40px;margin-bottom:0;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.pill{padding:6px 13px;border-radius:20px;border:1.5px solid var(--g4);background:#fff;font-size:11px;font-weight:700;cursor:pointer;color:var(--g2);transition:all .13s;}
+.pill:active{background:var(--pl);border-color:var(--p);color:var(--p);}
+.phc{border-radius:var(--r12);padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;}
+.phc-o{background:var(--okl);border:1px solid rgba(0,168,107,.18);}
+.phc-c{background:var(--errl);border:1px solid rgba(224,52,52,.12);}
+.phc-24{background:var(--pl);border:1px solid var(--pm);}
+.phc-name{font-size:13px;font-weight:700;color:var(--ink);}
+.phc-addr{font-size:11px;color:var(--g2);margin-top:2px;line-height:1.5;}
+.phc-tel{font-size:11px;color:var(--p);margin-top:2px;font-weight:700;}
+.phc-t{font-size:11px;font-weight:700;margin-top:3px;}
+.ptag{padding:4px 10px;border-radius:20px;font-size:9px;font-weight:800;flex-shrink:0;white-space:nowrap;letter-spacing:.3px;}
+.tag-o{background:#C2F2E1;color:#00773F;}
+.tag-c{background:#FCCFCF;color:#B01A1A;}
+.tag-24{background:var(--pm);color:var(--pd);}
+
+/* ── DISEASE ── */
+.dis{background:#fff;border:1px solid var(--g4);border-radius:var(--r12);padding:14px;display:flex;gap:14px;cursor:pointer;transition:all .13s;margin-bottom:8px;}
+.dis:active{background:var(--g5);}
+.dis-name{font-size:14px;font-weight:800;color:var(--ink);}
+.dis-zone{font-size:10px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.dis-desc{font-size:12px;color:var(--g2);margin-top:4px;line-height:1.5;}
+.sev{display:inline-block;margin-top:7px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;}
+.sev-r{background:var(--errl);color:var(--err);}
+.sev-w{background:var(--warnl);color:var(--warn);}
+
+/* ── VACC ── */
+.vacc{background:#fff;border:1px solid var(--g4);border-radius:var(--r12);padding:12px 14px;display:flex;gap:12px;align-items:center;margin-bottom:7px;}
+.vacc-dot{width:36px;height:36px;background:var(--pl);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.vacc-dot svg{width:18px;height:18px;}
+.vacc-age{font-size:13px;font-weight:800;}
+.vacc-shots{font-size:12px;color:var(--g2);margin-top:2px;}
+
+/* ── ABOUT ── */
+.about-hd{background:var(--p);border-radius:var(--r20);padding:28px 20px;text-align:center;color:#fff;margin-bottom:14px;}
+.about-av{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;}
+.about-name{font-size:22px;font-weight:800;}
+.about-sub{font-size:12px;opacity:.7;margin-top:5px;line-height:1.8;}
+.about-tag{display:inline-block;margin-top:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;}
+.irow{background:#fff;border:1px solid var(--g4);border-radius:var(--r12);padding:13px 14px;display:flex;gap:12px;align-items:center;margin-bottom:7px;}
+.irow-icon{width:34px;height:34px;border-radius:8px;background:var(--pl);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.irow-icon svg{width:16px;height:16px;}
+.irow-lbl{font-size:10px;font-weight:700;color:var(--g2);text-transform:uppercase;letter-spacing:.5px;}
+.irow-val{font-size:14px;font-weight:700;margin-top:2px;}
+.copy{background:var(--g5);border-radius:var(--r12);padding:16px;text-align:center;margin-top:6px;}
+.copy p{font-size:12px;color:var(--g2);line-height:2;}
+
+/* ── KEY MODAL ── */
+#km{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;}
+#km.on{display:flex;}
+.km-sheet{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;}
+.km-bar{width:36px;height:4px;background:var(--g4);border-radius:2px;margin:0 auto 20px;}
+.km-title{font-size:17px;font-weight:800;margin-bottom:4px;}
+.km-sub{font-size:13px;color:var(--g2);line-height:1.6;margin-bottom:18px;}
+.km-sub a{color:var(--p);font-weight:700;}
+.km-btns{display:flex;gap:10px;margin-top:4px;}
+.km-cancel{flex:1;padding:14px;border-radius:var(--r12);border:1.5px solid var(--g4);background:#fff;font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;color:var(--g2);cursor:pointer;}
+
+/* ── CHU ── */
+.chu-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--g4);font-size:13px;font-weight:600;}
+.chu-row:last-child{border-bottom:none;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:99999;opacity:0;transition:opacity .25s;max-width:88vw;text-align:center;pointer-events:none;}
+#toast.on{opacity:1;}
+
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- ══════ GATE ══════ -->
+<div id="gate">
+  <div class="gate-top">
+    <div class="gate-icon">
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect x="12" y="2" width="8" height="28" rx="3" fill="white"/>
+        <rect x="2" y="12" width="28" height="8" rx="3" fill="white"/>
+      </svg>
+    </div>
+    <div class="gate-app">MediAfrique</div>
+    <div class="gate-tagline">Votre santé, notre priorité 🇨🇮</div>
+  </div>
+
+  <div class="gate-body">
+    <!-- Étape 1 -->
+    <div id="s1">
+      <div class="step-dots"><div class="sdot on"></div><div class="sdot"></div></div>
+      <div class="gate-heading">Créer mon compte</div>
+      <div class="gate-sub">Gratuit · Sécurisé · 2 minutes</div>
+      <div class="fi"><label>Prénom</label><input type="text" id="g-name" placeholder="Ex : Konaté, Adjoua..."></div>
+      <div class="fi"><label>Email</label><input type="email" id="g-email" placeholder="votre@gmail.com"></div>
+      <button class="gbtn" onclick="sendCode()">Continuer</button>
+      <div class="gate-note">En continuant, vous acceptez que votre email soit utilisé uniquement pour la vérification.</div>
+    </div>
+    <!-- Étape 2 -->
+    <div id="s2" style="display:none;">
+      <div class="step-dots"><div class="sdot"></div><div class="sdot on"></div></div>
+      <div class="gate-heading">Vérification</div>
+      <div class="gate-sub">Entrez le code à 6 chiffres envoyé à <strong id="em-shown" style="color:var(--p)"></strong></div>
+      <div class="code-wrap" id="code-wrap">
+        <input class="code-box" type="text" maxlength="1" inputmode="numeric" oninput="codeInput(this,0)">
+        <input class="code-box" type="text" maxlength="1" inputmode="numeric" oninput="codeInput(this,1)">
+        <input class="code-box" type="text" maxlength="1" inputmode="numeric" oninput="codeInput(this,2)">
+        <input class="code-box" type="text" maxlength="1" inputmode="numeric" oninput="codeInput(this,3)">
+        <input class="code-box" type="text" maxlength="1" inputmode="numeric" oninput="codeInput(this,4)">
+        <input class="code-box" type="text" maxlength="1" inputmode="numeric" oninput="codeInput(this,5)">
+      </div>
+      <button class="gbtn" onclick="verifyCode()" style="margin-top:16px;">Vérifier</button>
+      <span class="gate-link" onclick="resendCode()">Renvoyer le code</span>
+      <span class="gate-link" style="color:var(--g2);font-weight:500;" onclick="back1()">← Modifier l'email</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ CLÉ MODAL ══════ -->
+<div id="km">
+  <div class="km-sheet">
+    <div class="km-bar"></div>
+    <div class="km-title">Paramètres IA</div>
+    <div class="km-sub">Obtenez votre clé gratuite sur <a href="https://console.groq.com" target="_blank">console.groq.com</a> → API Keys → Create Key</div>
+    <label class="lbl">Clé Groq (gsk_...)</label>
+    <input type="text" id="km-inp" placeholder="gsk_ ...">
+    <div class="km-btns">
+      <button class="km-cancel" onclick="document.getElementById('km').classList.remove('on')">Annuler</button>
+      <button class="btn btn-p" style="flex:2;" onclick="saveKey()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ APP ══════ -->
+<header>
+  <div class="hdr">
+    <div class="hdr-logo">
+      <svg viewBox="0 0 32 32" fill="none">
+        <rect x="12" y="2" width="8" height="28" rx="3" fill="white"/>
+        <rect x="2" y="12" width="28" height="8" rx="3" fill="white"/>
+      </svg>
+    </div>
+    <div class="hdr-title">Medi<span>Afrique</span></div>
+    <div class="hdr-right">
+      <div class="hdr-chip" id="hdr-chip" style="display:none;">
+        <div class="hdr-av" id="hdr-av">?</div>
+        <div class="hdr-name" id="hdr-nm">—</div>
+      </div>
+      <div class="hdr-gear" onclick="document.getElementById('km').classList.add('on')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="nav">
+  <div class="nav-row">
+    <button class="nb active" onclick="go('home',this)"><span class="nb-ico">🏠</span>Accueil</button>
+    <button class="nb" onclick="go('diag',this)"><span class="nb-ico">🩺</span>Diagnostic</button>
+    <button class="nb" onclick="go('mal',this)"><span class="nb-ico">🦠</span>Maladies</button>
+    <button class="nb" onclick="go('med',this)"><span class="nb-ico">💊</span>Médicaments</button>
+    <button class="nb" onclick="go('mat',this)"><span class="nb-ico">👶</span>Maternité</button>
+    <button class="nb" onclick="go('nut',this)"><span class="nb-ico">🥗</span>Nutrition</button>
+    <button class="nb" onclick="go('urg',this)"><span class="nb-ico">🚨</span>Urgences</button>
+    <button class="nb" onclick="go('ph',this)"><span class="nb-ico">🏪</span>Pharmacies</button>
+    <button class="nb" onclick="go('about',this)"><span class="nb-ico">👤</span>À propos</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div class="home-hero-label">Assistant médical IA · CI 🇨🇮</div>
+    <div class="home-hero-title" id="home-greeting">Bienvenue sur<br>MediAfrique</div>
+    <div class="home-hero-sub">Diagnostic, pharmacies, urgences —<br>disponible 24h/24, sans rendez-vous.</div>
+  </div>
+  <div class="qa-grid">
+    <div class="qa" onclick="go('diag',document.querySelectorAll('.nb')[1])">
+      <div class="qa-icon qai-b">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      </div>
+      <div class="qa-title">Diagnostic</div>
+      <div class="qa-sub">Symptômes & ordonnance</div>
+      <div class="qa-arr">Commencer <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+    <div class="qa" onclick="go('urg',document.querySelectorAll('.nb')[6])">
+      <div class="qa-icon qai-r">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="qa-title">Urgences</div>
+      <div class="qa-sub">Gestes immédiats</div>
+      <div class="qa-arr" style="color:var(--err)">Accéder <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+    <div class="qa" onclick="go('ph',document.querySelectorAll('.nb')[7])">
+      <div class="qa-icon qai-g">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </div>
+      <div class="qa-title">Pharmacies</div>
+      <div class="qa-sub">110+ en temps réel</div>
+      <div class="qa-arr" style="color:var(--ok)">Voir <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+    <div class="qa" onclick="go('mal',document.querySelectorAll('.nb')[2])">
+      <div class="qa-icon qai-w">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg>
+      </div>
+      <div class="qa-title">Maladies</div>
+      <div class="qa-sub">Fiches tropicales</div>
+      <div class="qa-arr" style="color:var(--warn)">Consulter <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIAGNOSTIC -->
+<div class="page" id="page-diag">
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico cib"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+      <div><div class="card-title">Diagnostic IA</div><div class="card-sub">Décrivez vos symptômes pour obtenir un diagnostic.</div></div>
+    </div>
+    <label class="lbl">Âge & Sexe</label>
+    <div class="row2"><input type="text" id="d-age" placeholder="Ex: 25 ans"><select id="d-sexe"><option>Homme</option><option>Femme</option><option>Enfant</option></select></div>
+    <label class="lbl">Symptômes</label>
+    <div class="chips" id="c-diag">
+      <div class="chip chip-sm on" onclick="chip(this,'c-diag')">Fièvre</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Maux de tête</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Nausées</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Toux</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Diarrhée</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Fatigue</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Douleur poitrine</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Douleurs corps</div>
+    </div>
+    <textarea id="d-desc" placeholder="Décrivez vos symptômes en détail..."></textarea>
+    <div class="row2">
+      <div><label class="lbl">Durée</label><select id="d-duree"><option>Moins de 24h</option><option>1–3 jours</option><option>4–7 jours</option><option>Plus d'une semaine</option></select></div>
+      <div><label class="lbl">Antécédents</label><input type="text" id="d-ant" placeholder="Diabète, HTA..."></div>
+    </div>
+    <button class="btn btn-p" onclick="doDiag()">Obtenir le diagnostic</button>
+    <div class="spin" id="sp-d"></div>
+    <div class="rx" id="rx">
+      <div class="rx-hd">
+        <div class="rx-logo"><svg viewBox="0 0 32 32" fill="none"><rect x="12" y="2" width="8" height="28" rx="3" fill="white"/><rect x="2" y="12" width="28" height="8" rx="3" fill="white"/></svg></div>
+        <div><div class="rx-name">MediAfrique AI</div><div class="rx-sub">Assistant Médical · Côte d'Ivoire 🇨🇮</div></div>
+        <div class="rx-badges"><div class="rx-badge">OMS</div><div class="rx-badge">Afrique</div></div>
+      </div>
+      <div class="rx-body" id="rx-txt"></div>
+      <div class="rx-foot">⚠ Informatif — Consultez un médecin agréé pour confirmation.<br>Créé par <strong>Tuo Stéphane</strong> · Lycée Moderne Alassane Ouattara d'Anyama 🇨🇮</div>
+    </div>
+  </div>
+</div>
+
+<!-- MALADIES -->
+<div class="page" id="page-mal">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div><div class="card-title">Rechercher une maladie</div><div class="card-sub">Informations médicales complètes.</div></div></div>
+    <input type="text" id="m-nom" placeholder="Ex: paludisme, typhoïde, choléra...">
+    <button class="btn btn-p" onclick="getMal()">Rechercher</button>
+    <div class="spin" id="sp-m"></div>
+    <div class="rbox rb" id="r-m"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><div class="card-title">Maladies prioritaires</div></div></div>
+    <div class="dis" onclick="qMal('Paludisme')"><span style="font-size:24px;flex-shrink:0">🦟</span><div><div class="dis-name">Paludisme</div><div class="dis-zone">Afrique subsaharienne</div><div class="dis-desc">Fièvre, frissons, sueurs. Traitement: ACT Artémisinine.</div><span class="sev sev-r">Urgent</span></div></div>
+    <div class="dis" onclick="qMal('Typhoïde')"><span style="font-size:24px;flex-shrink:0">🌡️</span><div><div class="dis-name">Typhoïde</div><div class="dis-zone">Eau non potable</div><div class="dis-desc">Fièvre prolongée, maux de tête. Traitement: Ciprofloxacine.</div><span class="sev sev-r">Sérieux</span></div></div>
+    <div class="dis" onclick="qMal('Choléra')"><span style="font-size:24px;flex-shrink:0">💧</span><div><div class="dis-name">Choléra</div><div class="dis-zone">Eau contaminée</div><div class="dis-desc">Diarrhée massive. Réhydratation immédiate.</div><span class="sev sev-r">Urgent</span></div></div>
+    <div class="dis" onclick="qMal('Méningite')"><span style="font-size:24px;flex-shrink:0">🧠</span><div><div class="dis-name">Méningite</div><div class="dis-zone">Ceinture sahélienne</div><div class="dis-desc">Raideur nuque, fièvre élevée. Hôpital immédiat.</div><span class="sev sev-r">Critique</span></div></div>
+    <div class="dis" onclick="qMal('Tuberculose')"><span style="font-size:24px;flex-shrink:0">🫁</span><div><div class="dis-name">Tuberculose</div><div class="dis-zone">Toute l'Afrique</div><div class="dis-desc">Toux 3+ semaines. Traitement gratuit en centre de santé.</div><span class="sev sev-w">Modéré</span></div></div>
+  </div>
+</div>
+
+<!-- MÉDICAMENTS -->
+<div class="page" id="page-med">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cig"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><path d="M10.5 20H4a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2h3.93a2 2 0 0 1 1.66.9l.82 1.2a2 2 0 0 0 1.66.9H20a2 2 0 0 1 2 2v3"/><circle cx="18" cy="18" r="3"/><path d="M18 15v3l1.5 1.5"/></svg></div><div><div class="card-title">Information médicament</div><div class="card-sub">Dosage, effets, précautions.</div></div></div>
+    <input type="text" id="med-nom" placeholder="Ex: Paracétamol, Amoxicilline, Coartem...">
+    <label class="lbl">Profil patient</label>
+    <select id="med-age"><option>Nourrisson</option><option>Enfant</option><option selected>Adulte</option><option>Personne âgée</option><option>Femme enceinte</option></select>
+    <button class="btn btn-ok" onclick="getMed()">Obtenir les informations</button>
+    <div class="spin" id="sp-med"></div>
+    <div class="rbox rg" id="r-med"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cig"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg></div><div><div class="card-title">Plantes médicinales africaines</div></div></div>
+    <input type="text" id="pl-nom" placeholder="Ex: Moringa, Neem, Kinkeliba...">
+    <button class="btn btn-ok" onclick="getPlante()">Rechercher</button>
+    <div class="spin" id="sp-pl"></div>
+    <div class="rbox rg" id="r-pl"></div>
+  </div>
+</div>
+
+<!-- MATERNITÉ -->
+<div class="page" id="page-mat">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cib"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div><div class="card-title">Santé Maternelle & Infantile</div><div class="card-sub">Grossesse, allaitement, santé enfants.</div></div></div>
+    <div class="chips" id="c-mat">
+      <div class="chip on" onclick="chip(this,'c-mat')">Grossesse</div>
+      <div class="chip" onclick="chip(this,'c-mat')">Allaitement</div>
+      <div class="chip" onclick="chip(this,'c-mat')">Nourrisson</div>
+      <div class="chip" onclick="chip(this,'c-mat')">Vaccins enfant</div>
+      <div class="chip" onclick="chip(this,'c-mat')">Fièvre enfant</div>
+    </div>
+    <textarea id="mat-q" placeholder="Votre question..."></textarea>
+    <button class="btn btn-p" onclick="getMat()">Obtenir les conseils</button>
+    <div class="spin" id="sp-mat"></div>
+    <div class="rbox rb" id="r-mat"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico ciw"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="card-title">Calendrier vaccinal enfant</div></div></div>
+    <div class="vacc"><div class="vacc-dot"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="vacc-age">Naissance</div><div class="vacc-shots">BCG + Polio oral + Hépatite B</div></div></div>
+    <div class="vacc"><div class="vacc-dot"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="vacc-age">6 semaines</div><div class="vacc-shots">Pentavalent + Pneumocoque + Rotavirus</div></div></div>
+    <div class="vacc"><div class="vacc-dot"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="vacc-age">9 mois</div><div class="vacc-shots">Rougeole + Fièvre jaune + Méningite A</div></div></div>
+    <div class="vacc"><div class="vacc-dot"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="vacc-age">18 mois</div><div class="vacc-shots">Rappel Rougeole + Polio + DTP</div></div></div>
+  </div>
+</div>
+
+<!-- NUTRITION -->
+<div class="page" id="page-nut">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cig"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><path d="M12 2a5 5 0 0 1 5 5c0 2.76-2.24 5-5 5S7 9.76 7 7a5 5 0 0 1 5-5z"/><path d="M19.07 4.93c3.9 3.9 3.9 10.24 0 14.14M4.93 4.93C1.03 8.83 1.03 15.17 4.93 19.07"/></svg></div><div><div class="card-title">Nutrition Thérapeutique</div><div class="card-sub">Plan alimentaire médicalisé, ressources locales.</div></div></div>
+    <label class="lbl">Condition médicale</label>
+    <select id="nut-c"><option>Malnutrition enfant</option><option>Diabète type 2</option><option>Hypertension</option><option>Anémie</option><option>Grossesse</option><option>Convalescence</option><option>Obésité</option><option>Gastrite / Ulcère</option><option>Paludisme (récupération)</option></select>
+    <input type="text" id="nut-r" placeholder="Votre pays (ex: Côte d'Ivoire)">
+    <button class="btn btn-ok" onclick="getNut()">Générer le plan</button>
+    <div class="spin" id="sp-nut"></div>
+    <div class="rbox rg" id="r-nut"></div>
+  </div>
+</div>
+
+<!-- URGENCES -->
+<div class="page" id="page-urg">
+  <div class="urg-banner">
+    <div>
+      <div class="urg-label">URGENCE · CÔTE D'IVOIRE</div>
+      <div class="urg-num">15 · 185 · 170</div>
+      <div class="urg-desc">SAMU · Police Secours · Pompiers</div>
+    </div>
+    <div style="margin-left:auto;font-size:40px;">🚑</div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div><div class="card-title">Premiers Secours Immédiats</div><div class="card-sub">Sélectionnez la situation.</div></div></div>
+    <div class="chips" id="c-urg">
+      <div class="chip chip-sm on" onclick="chip(this,'c-urg')">Arrêt cardiaque</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Hémorragie</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Brûlure grave</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Perte conscience</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Morsure serpent</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Empoisonnement</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Accouchement urgent</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Convulsions enfant</div>
+    </div>
+    <button class="btn btn-err" onclick="getUrg()">Gestes d'urgence immédiats</button>
+    <div class="spin" id="sp-urg"></div>
+    <div class="rbox rr" id="r-urg"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div><div class="card-title">Signes d'alarme absolus</div></div></div>
+    <div class="alarm al-r"><div style="flex-shrink:0;font-size:18px">🫀</div><div><div class="alarm-t">Douleur poitrine + bras gauche</div><div class="alarm-d">Infarctus possible → Urgences immédiatement</div></div></div>
+    <div class="alarm al-r"><div style="flex-shrink:0;font-size:18px">🧠</div><div><div class="alarm-t">Paralysie soudaine + trouble parole</div><div class="alarm-d">AVC possible → Chaque minute est vitale</div></div></div>
+    <div class="alarm al-r"><div style="flex-shrink:0;font-size:18px">🌡️</div><div><div class="alarm-t">Fièvre 40°C+ avec raideur nuque</div><div class="alarm-d">Méningite possible → Hôpital immédiat</div></div></div>
+    <div class="alarm al-w"><div style="flex-shrink:0;font-size:18px">💧</div><div><div class="alarm-t">Diarrhée aqueuse abondante</div><div class="alarm-d">Déshydratation grave → Réhydratation + médecin</div></div></div>
+  </div>
+</div>
+
+<!-- PHARMACIES -->
+<div class="page" id="page-ph">
+  <div class="ph-top">
+    <div class="ph-clock-wrap">
+      <div class="ph-clock" id="ph-t">--:--</div>
+      <div class="ph-day" id="ph-d">—</div>
+    </div>
+    <div class="ph-divider"></div>
+    <div class="ph-status">
+      <div class="ph-count" id="ph-c">—</div>
+      <div class="ph-count-sub">pharmacies disponibles</div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cib"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div><div class="card-title">Rechercher une pharmacie</div></div></div>
+    <div class="ph-search-wrap">
+      <span class="ph-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+      <input type="text" id="ph-q" placeholder="Quartier, commune ou ville..." oninput="searchPh(this.value)">
+    </div>
+    <div class="pills">
+      <span class="pill" onclick="searchPh('Abobo')">Abobo</span><span class="pill" onclick="searchPh('Cocody')">Cocody</span>
+      <span class="pill" onclick="searchPh('Yopougon')">Yopougon</span><span class="pill" onclick="searchPh('Adjamé')">Adjamé</span>
+      <span class="pill" onclick="searchPh('Marcory')">Marcory</span><span class="pill" onclick="searchPh('Plateau')">Plateau</span>
+      <span class="pill" onclick="searchPh('Treichville')">Treichville</span><span class="pill" onclick="searchPh('Koumassi')">Koumassi</span>
+      <span class="pill" onclick="searchPh('Port-Bouët')">Port-Bouët</span><span class="pill" onclick="searchPh('Anyama')">Anyama</span>
+      <span class="pill" onclick="searchPh('Bingerville')">Bingerville</span><span class="pill" onclick="searchPh('Bouaké')">Bouaké</span>
+      <span class="pill" onclick="searchPh('Yamoussoukro')">Yamoussoukro</span><span class="pill" onclick="searchPh('Daloa')">Daloa</span>
+      <span class="pill" onclick="searchPh('San-Pédro')">San-Pédro</span><span class="pill" onclick="searchPh('Korhogo')">Korhogo</span>
+      <span class="pill" onclick="searchPh('Man')">Man</span><span class="pill" onclick="searchPh('Gagnoa')">Gagnoa</span>
+      <span class="pill" onclick="searchPh('Abengourou')">Abengourou</span><span class="pill" onclick="searchPh('Bondoukou')">Bondoukou</span>
+    </div>
+    <div id="sr-wrap" style="margin-top:14px;display:none;"><div id="sr-title" style="font-size:14px;font-weight:800;margin-bottom:10px;"></div><div id="sr-list"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cig"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="card-title" id="now-t">Ouvertes maintenant</div></div></div>
+    <div id="now-l"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico ciw"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="card-title">Prochaines gardes</div></div></div>
+    <div id="next-l"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cib"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="card-title">CHU — Ouverts 24h/24</div></div></div>
+    <div style="background:var(--pl);border-radius:var(--r12);padding:14px;margin-bottom:10px;">
+      <div style="font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--p);text-transform:uppercase;margin-bottom:10px;">Abidjan</div>
+      <div class="chu-row"><span>CHU de Cocody</span><span class="ptag tag-24">24h/24</span></div>
+      <div class="chu-row"><span>CHU de Treichville</span><span class="ptag tag-24">24h/24</span></div>
+      <div class="chu-row"><span>CHU de Yopougon</span><span class="ptag tag-24">24h/24</span></div>
+    </div>
+    <div style="background:var(--okl);border-radius:var(--r12);padding:14px;">
+      <div style="font-size:10px;font-weight:800;letter-spacing:.5px;color:var(--ok);text-transform:uppercase;margin-bottom:10px;">Intérieur</div>
+      <div style="font-size:13px;font-weight:600;color:var(--ink);line-height:2.3;">CHU Bouaké · CHU Yamoussoukro<br>Hôpital San-Pédro · CHR Korhogo<br>Hôpital Daloa · Hôpital Man</div>
+    </div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="about-hd">
+    <div class="about-av">👨‍💻</div>
+    <div class="about-name">Tuo Stéphane</div>
+    <div class="about-sub">Élève en Terminale C<br>Lycée Moderne Alassane Ouattara d'Anyama<br>Côte d'Ivoire 🇨🇮</div>
+    <div class="about-tag">Développeur & Innovateur Africain</div>
+  </div>
+  <div style="background:#fff;border:1px solid var(--g4);border-radius:var(--r12);padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:8px;">
+    <div style="width:44px;height:44px;border-radius:10px;background:var(--p);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><svg width="20" height="20" viewBox="0 0 32 32" fill="none"><rect x="12" y="2" width="8" height="28" rx="3" fill="white"/><rect x="2" y="12" width="28" height="8" rx="3" fill="white"/></svg></div>
+    <div><div style="font-size:15px;font-weight:800;">MediAfrique AI</div><div style="font-size:12px;color:var(--g2);margin-top:2px;">Santé intelligente pour l'Afrique</div></div>
+  </div>
+  <div class="irow"><div class="irow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div><div class="irow-lbl">Nationalité</div><div class="irow-val">Ivoirien · Côte d'Ivoire</div></div></div>
+  <div class="irow"><div class="irow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div><div><div class="irow-lbl">École</div><div class="irow-val">Lycée Moderne Alassane Ouattara d'Anyama</div></div></div>
+  <div class="irow"><div class="irow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div><div><div class="irow-lbl">Classe</div><div class="irow-val">Terminale C · Série Scientifique</div></div></div>
+  <div class="irow"><div class="irow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div><div class="irow-lbl">Mission</div><div class="irow-val">Mettre l'IA au service des Africains</div></div></div>
+  <div class="copy"><p>© 2026 MediAfrique AI · Créé par <strong>Tuo Stéphane</strong><br>Anyama, Côte d'Ivoire 🇨🇮</p></div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── DONNÉES ──
+let USER = JSON.parse(localStorage.getItem('maf_user') || 'null');
+let GK   = localStorage.getItem('maf_k') || '';
+let TMP  = {};
+
+// ── CODE OTP (6 cases séparées) ──
+function codeInput(el, idx) {
+  el.classList.toggle('filled', el.value.length > 0);
+  if (el.value.length === 1) {
+    const boxes = document.querySelectorAll('.code-box');
+    if (idx < 5) boxes[idx + 1].focus();
+    else verifyCode(); // Auto-vérifier quand 6 chiffres
+  }
+}
+
+function getCode() {
+  return [...document.querySelectorAll('.code-box')].map(b => b.value).join('');
+}
+
+function clearCode() {
+  document.querySelectorAll('.code-box').forEach(b => { b.value = ''; b.classList.remove('filled', 'shake'); });
+}
+
+// ── AUTH ──
+const W3_KEY = 'COLLE_TA_CLE_WEB3FORMS_ICI'; // → web3forms.com/access
+
+async function sendCode() {
+  const name  = document.getElementById('g-name').value.trim();
+  const email = document.getElementById('g-email').value.trim();
+  if (!name)               return toast('Entrez votre prénom.');
+  if (!email.includes('@')) return toast('Email invalide.');
+
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+  TMP = { name, email, code };
+
+  const masked = email.replace(/(.{2})(.*)(@.*)/, (_, a, b, c) =>
+    a + '*'.repeat(Math.min(b.length, 5)) + c);
+  document.getElementById('em-shown').textContent = masked;
+
+  const btn = document.querySelector('#s1 .gbtn');
+  btn.textContent = 'Envoi...'; btn.disabled = true;
+
+  try {
+    const r = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        access_key: W3_KEY,
+        to: email,
+        subject: 'Votre code MediAfrique AI',
+        from_name: 'MediAfrique AI',
+        message: `Bonjour ${name},\n\nVotre code de vérification est :\n\n${code}\n\nCe code est valable 10 minutes.\n\n— MediAfrique AI 🇨🇮`,
+      }),
+    });
+    const d = await r.json();
+    if (d.success) {
+      document.getElementById('s1').style.display = 'none';
+      document.getElementById('s2').style.display = 'block';
+      setTimeout(() => document.querySelectorAll('.code-box')[0].focus(), 150);
+      toast('Code envoyé à votre email !');
+    } else { throw new Error(); }
+  } catch {
+    // Mode démo : afficher le code
+    console.log(`%cCode MediAfrique: ${TMP.code}`, 'font-size:24px;font-weight:bold;color:#0A6EFF');
+    document.getElementById('s1').style.display = 'none';
+    document.getElementById('s2').style.display = 'block';
+    setTimeout(() => document.querySelectorAll('.code-box')[0].focus(), 150);
+    toast('Mode démo — code dans la console (F12)');
+  } finally {
+    btn.textContent = 'Continuer'; btn.disabled = false;
+  }
+}
+
+async function resendCode() {
+  if (!TMP.code) return;
+  toast('Renvoi du code...');
+  try {
+    await fetch('https://api.web3forms.com/submit', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ access_key: W3_KEY, to: TMP.email, subject: 'Code MediAfrique (renvoi)', from_name: 'MediAfrique AI', message: `Code : ${TMP.code}` }),
+    });
+    toast('Code renvoyé !');
+  } catch { toast('Vérifiez votre connexion.'); }
+}
+
+function verifyCode() {
+  const entered = getCode();
+  if (entered.length < 6) return toast('Entrez les 6 chiffres.');
+  if (entered !== TMP.code) {
+    document.querySelectorAll('.code-box').forEach(b => {
+      b.classList.add('shake');
+      setTimeout(() => b.classList.remove('shake'), 350);
+    });
+    return toast('Code incorrect. Réessayez.');
+  }
+  USER = { name: TMP.name, email: TMP.email };
+  localStorage.setItem('maf_user', JSON.stringify(USER));
+  document.getElementById('gate').classList.add('off');
+  initApp();
+}
+
+function back1() {
+  document.getElementById('s2').style.display = 'none';
+  document.getElementById('s1').style.display = 'block';
+  clearCode();
+}
+
+function initApp() {
+  if (!USER) return;
+  document.getElementById('hdr-chip').style.display = 'flex';
+  document.getElementById('hdr-av').textContent = USER.name[0].toUpperCase();
+  document.getElementById('hdr-nm').textContent = USER.name;
+  document.getElementById('home-greeting').innerHTML =
+    `Bonjour,<br>${USER.name} 👋`;
+}
+
+// ── CLÉ ──
+function saveKey() {
+  const k = document.getElementById('km-inp').value.trim();
+  if (!k.startsWith('gsk_')) return toast('Clé invalide — doit commencer par gsk_');
+  GK = k; localStorage.setItem('maf_k', k);
+  document.getElementById('km').classList.remove('on');
+  toast('Clé enregistrée ✓');
+}
+
+// ── PHARMACIES ──
+const PH=[
+  {n:"Pharmacie du Plateau",q:"Plateau",a:"Rue des Banques, Imm. MACI",t:"",v:"Abidjan",s:8,e:22,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Longchamp",q:"Plateau",a:"Angle Av. Marchand / Bd Roume",t:"",v:"Abidjan",s:8,e:20,j:[1,2,3,4,5]},
+  {n:"Pharmacie de Garde Plateau",q:"Plateau",a:"Appeler le 170",t:"170",v:"Abidjan",s:20,e:8,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Rédemption",q:"Cocody Angré",a:"Angré Château",t:"",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Ave Maria",q:"Cocody Angré",a:"Angré 8ème Tranche",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Les Arums",q:"Cocody Angré",a:"Angré 8ème Tranche",t:"27 22 50 66 40",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Les 3 Sources",q:"Cocody Angré",a:"Carrefour Djorobité 1",t:"27 22 89 99 71",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Arnica",q:"Cocody Riviera II",a:"Riviera II, près petite mosquée",t:"22 59 56 78",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Hosanna",q:"Cocody Riviera",a:"Riviera Triangle, Clinique Saint Viateur",t:"27 22 55 25 59",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Riviera Bonoumin",q:"Cocody Riviera",a:"Riviera Bonoumin",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Riviera Golf",q:"Cocody Riviera",a:"Riviera Golf, carrefour Leader Price",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Riviera Palmeraie",q:"Cocody Riviera",a:"Riviera Palmeraie",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Riviera III",q:"Cocody Riviera",a:"Riviera III, carrefour lycée français",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Riviera 5",q:"Cocody Riviera",a:"Riviera 5, Bd Mitterrand",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Cocody II Plateaux",q:"Cocody 2 Plateaux",a:"Boulevard Latrille",t:"",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie du Vallon",q:"Cocody 2 Plateaux",a:"Rue des Jardins, face BSIC",t:"",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Cocody",q:"Cocody",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:8,j:[5,6,0]},
+  {n:"Pharmacie Adjamé Grand Marché",q:"Adjamé",a:"Grand Marché d'Adjamé",t:"",v:"Abidjan",s:7,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie 220 Logements",q:"Adjamé",a:"Face grand bloc commissariat",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Sarah",q:"Adjamé",a:"Route du Zoo, avant pont d'Agban",t:"20 39 03 57",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Saint Emmanuel",q:"Adjamé Mirador",a:"Bd Général de Gaulle, face Imm. Sicogi",t:"44 77 59 09",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie d'Agban",q:"Adjamé",a:"Cité Fermont, face cité policière",t:"20 37 22 30",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Koro",q:"Adjamé",a:"Quartier Marie Thérèse HB",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Saint Uriel",q:"Adjamé Paillet",a:"Carrefour Paillet extension",t:"02 29 72 72",v:"Abidjan",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Adjamé",q:"Adjamé",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:7,j:[5,6,0]},
+  {n:"Pharmacie de la Mé",q:"Abobo Gare",a:"Entre Mairie et Gendarmerie, Voie Express",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie la Providence",q:"Abobo Gare",a:"Quartier Banco, 1er arrêt SOTRA",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Abobo Santé",q:"Abobo Gare",a:"Face Hôpital Général d'Abobo Sud",t:"27 24 39 13 84",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Notre Dame de Fatima",q:"Abobo Dokui",a:"Carrefour Paroisse Sainte Monique",t:"27 22 42 88 93",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Les 4 Saisons",q:"Abobo Dokui",a:"Abobo Dokui",t:"58 60 90 30",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie La Paix",q:"Abobo Cocoteraie",a:"Face Groupe Scolaire NANTI",t:"07 09 84 75 64",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Sainte Odile",q:"Abobo Dokui",a:"Carrefour Clinique Centrale d'Abobo",t:"24 39 29 97",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Safir",q:"Abobo PK18",a:"PK 18, route d'Anyama, route N'Dotré",t:"07 09 86 26 35",v:"Abidjan",s:9,e:18,j:[1,2,3,4,5,6]},
+  {n:"Pharmacie Olympique",q:"Abobo N'Dotré",a:"N'Dotré, 300 m carrefour Yopougon",t:"07 89 99 44",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Carrefour Diallo",q:"Abobo PK18",a:"PK 18, Carrefour Diallo",t:"40 30 24 31",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Saint Sauveur",q:"Abobo Kennedy",a:"Quartier Kennedy Klouetcha",t:"24 48 47 41",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Abobo Baoulé",q:"Abobo Baoulé",a:"Face Commissariat 34ème arr.",t:"24 48 27 54",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Belle Ville",q:"Abobo Belle Ville",a:"Route d'Alépé, terminus Woro Woro",t:"24 39 91 96",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Actuelle",q:"Abobo Baoulé",a:"Carrefour Angré vers centre de santé",t:"22 20 41 87",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Amina",q:"Abobo Avocatier",a:"Près Maternité HKB",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Divine Espérance",q:"Abobo Sagbé",a:"Entre paroisse St Joseph et commissariat",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Racines",q:"Abobo Anador",a:"Près de la COOPEC SAMAN",t:"21 33 88 97",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie BSA",q:"Abobo Anonkoua Kouté",a:"Axe Abobo-Anyama, près CIE",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Agnitio",q:"Abobo Anonkoua Kouté",a:"50 m Groupe Scolaire Parthenon",t:"01 40 43 10 10",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie du Monastère",q:"Abobo Aboboté",a:"Près du Monastère Sainte Claire",t:"07 20 11 61",v:"Abidjan",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Abobote",q:"Abobo Aboboté",a:"Abobo Aboboté",t:"27 24 39 69 87",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Abobo",q:"Abobo",a:"Appeler le 170",t:"170",v:"Abidjan",s:20,e:8,j:[5,6,0]},
+  {n:"Pharmacie Eliel",q:"Anyama",a:"Face à la gare routière",t:"07 93 52 15",v:"Anyama",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie du Château",q:"Anyama",a:"Route principale avant le château",t:"23 55 66 48",v:"Anyama",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Anyama",q:"Anyama",a:"Appeler le 170",t:"170",v:"Anyama",s:20,e:8,j:[5,6,0]},
+  {n:"Pharmacie Saint Étienne",q:"Attécoubé",a:"Face marché poisson, Abobo Doumé",t:"23 45 72 42",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Abobo Doumé",q:"Attécoubé",a:"Face à la Marine Nationale",t:"21 32 39 90",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Ikhlas",q:"Yopougon Gesco",a:"Derrière la Manutention Africaine",t:"07 78 38 87 17",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Grande de Gesco",q:"Yopougon Gesco",a:"Terminus bus 34, près Gendarmerie",t:"",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie du 16ème",q:"Yopougon SICOGI",a:"Yopougon SICOGI",t:"07 79 44 55 03",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Yacine",q:"Yopougon Toit Rouge",a:"Entre Poste et collège Affoumou Yapo",t:"41 00 02 43",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Ségaï",q:"Yopougon Wassakara",a:"Face marché de Wassakara",t:"23 52 21 10",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Niangon Lokoa",q:"Yopougon Niangon",a:"Yopougon Niangon Lokoa",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Carrefour Canal",q:"Yopougon",a:"Carrefour Canal",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Yopougon",q:"Yopougon",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:8,j:[5,6,0]},
+  {n:"Pharmacie Métropole",q:"Marcory",a:"Derrière ORCA DECO",t:"27 21 39 27 19",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Marcory Zone 4",q:"Marcory Zone 4",a:"Zone 4 Marcory",t:"",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Marcory",q:"Marcory",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:8,j:[5,6,0]},
+  {n:"Pharmacie Koumassi Remblais",q:"Koumassi",a:"Bd du Cameroun, carrefour Station Mobil",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Sainte Bernadette",q:"Koumassi",a:"Koumassi Remblais, Bd du Cameroun",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Koumassi",q:"Koumassi",a:"Appeler le 170",t:"170",v:"Abidjan",s:20,e:8,j:[5,6,0]},
+  {n:"Pharmacie Victoire Marie",q:"Treichville",a:"Terminus SOTRA, 200 m Hôtel Ivoire",t:"27 22 48 68 91",v:"Abidjan",s:7,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Treichville Marché",q:"Treichville",a:"Marché de Treichville",t:"",v:"Abidjan",s:7,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Treichville",q:"Treichville",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:7,j:[5,6,0]},
+  {n:"Pharmacie Anani",q:"Port-Bouët",a:"Anani, Carrefour Cissé",t:"07 78 54 34 66",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Sogéfiha",q:"Port-Bouët",a:"Face au stade Seni Fofana",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Port-Bouët Aéroport",q:"Port-Bouët",a:"Zone aéroport FHB",t:"",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Saint Armel du Palais",q:"Bingerville",a:"100 m Palais de Justice Bingerville",t:"05 65 44 81 81",v:"Bingerville",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Sainte Marie de la Celle",q:"Bingerville",a:"Derrière cité Promogim Olympique",t:"",v:"Bingerville",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Iduriel",q:"Bingerville Koffikro",a:"Carrefour Bassamoise",t:"",v:"Bingerville",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Akandjé",q:"Bingerville",a:"Akandjé 2, en face du marché",t:"",v:"Bingerville",s:8,e:18,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Grand-Bassam Centre",q:"Grand-Bassam",a:"Centre ville Grand-Bassam",t:"",v:"Grand-Bassam",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Bonoua",q:"Bonoua",a:"Centre Bonoua",t:"",v:"Bonoua",s:8,e:18,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Notre Dame de la Paix",q:"Songon",a:"Adiapodoumé, côté restaurant Chez Zongo",t:"07 58 17 62 25",v:"Songon",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Dabou Centre",q:"Dabou",a:"Centre ville Dabou",t:"",v:"Dabou",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Agboville Centre",q:"Agboville",a:"Centre ville Agboville",t:"",v:"Agboville",s:8,e:18,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Centrale Bouaké",q:"Bouaké",a:"Centre ville Bouaké",t:"",v:"Bouaké",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Bouaké Commerce",q:"Bouaké",a:"Quartier Commerce Bouaké",t:"",v:"Bouaké",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Bouaké",q:"Bouaké",a:"Appeler le 170",t:"170",v:"Bouaké",s:21,e:8,j:[5,6,0]},
+  {n:"Pharmacie Yamoussoukro Centre",q:"Yamoussoukro",a:"Centre ville Yamoussoukro",t:"",v:"Yamoussoukro",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Djaha",q:"Yamoussoukro",a:"Kokrenou, zone Église CMA",t:"27 31 95 21 67",v:"Yamoussoukro",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Yamoussoukro",q:"Yamoussoukro",a:"Appeler le 170",t:"170",v:"Yamoussoukro",s:20,e:8,j:[5,6,0]},
+  {n:"Pharmacie Moderne de Bribore",q:"Daloa",a:"Daloa",t:"",v:"Daloa",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Misericorde Kennedy",q:"Daloa",a:"Daloa",t:"07 08 17 69 61",v:"Daloa",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie San-Pédro Centre",q:"San-Pédro",a:"Centre ville San-Pédro",t:"",v:"San-Pédro",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Saint Joseph Soubré",q:"Soubré",a:"Carrefour Doboa",t:"07 57 49 38 33",v:"Soubré",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Korhogo Centre",q:"Korhogo",a:"Centre ville Korhogo",t:"",v:"Korhogo",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Korhogo Commerce",q:"Korhogo",a:"Quartier Commerce",t:"",v:"Korhogo",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Man Centre",q:"Man",a:"Centre ville Man",t:"",v:"Man",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Gagnoa Centre",q:"Gagnoa",a:"Centre ville Gagnoa",t:"",v:"Gagnoa",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Divo Centre",q:"Divo",a:"Centre ville Divo",t:"",v:"Divo",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Abengourou Centre",q:"Abengourou",a:"Centre ville Abengourou",t:"",v:"Abengourou",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Notre Dame de Bondoukou",q:"Bondoukou",a:"Quartier Zanzan, Carrefour Rue Princesse",t:"07 99 29 93 63",v:"Bondoukou",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Séguéla Centre",q:"Séguéla",a:"Centre ville Séguéla",t:"",v:"Séguéla",s:8,e:18,j:[0,1,2,3,4,5,6]},
+];
+const CHU=[
+  {n:"CHU de Cocody",q:"Cocody",v:"Abidjan"},
+  {n:"CHU de Treichville",q:"Treichville",v:"Abidjan"},
+  {n:"CHU de Yopougon",q:"Yopougon",v:"Abidjan"},
+  {n:"CHU de Bouaké",q:"Bouaké",v:"Bouaké"},
+  {n:"CHU de Yamoussoukro",q:"Yamoussoukro",v:"Yamoussoukro"},
+];
+
+function isOpen(p,h,j){if(!p.j.includes(j))return false;return p.s<p.e?h>=p.s&&h<p.e:h>=p.s||h<p.e;}
+function hf(h){return String(h).padStart(2,'0')+'h00';}
+
+function phCard(p,type,ti){
+  const cls=type==='chu'?'phc-24':type==='open'?'phc-o':'phc-c';
+  const tag=type==='chu'?'<span class="ptag tag-24">24h/24</span>':type==='open'?'<span class="ptag tag-o">Ouvert</span>':'<span class="ptag tag-c">Fermé</span>';
+  const tc=type==='closed'?'color:var(--err)':'color:var(--ok)';
+  const n=p.n,q=p.q,a=p.a,t=p.t,v=p.v;
+  return `<div class="phc ${cls}"><div style="flex:1;min-width:0;"><div class="phc-name">${n}</div><div class="phc-addr">📍 ${q}${v&&v!==q?' · '+v:''}</div>${a?`<div class="phc-addr">${a}</div>`:''} ${t?`<div class="phc-tel">📞 ${t}</div>`:''} ${ti?`<div class="phc-t" style="${tc}">⏰ ${ti}</div>`:''}</div>${tag}</div>`;
+}
+
+function updatePh(){
+  const now=new Date(),h=now.getHours(),m=now.getMinutes(),j=now.getDay();
+  const jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const mois=['jan','fév','mar','avr','mai','juin','juil','aoû','sep','oct','nov','déc'];
+  document.getElementById('ph-t').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  document.getElementById('ph-d').textContent=`${jours[j]} ${now.getDate()} ${mois[now.getMonth()]}`;
+  const ouv=PH.filter(p=>isOpen(p,h,j));
+  const fer=PH.filter(p=>!isOpen(p,h,j));
+  const tot=ouv.length+CHU.length;
+  document.getElementById('ph-c').textContent=tot;
+  document.getElementById('now-t').textContent=`${tot} ouvertes maintenant`;
+  let h1='';CHU.forEach(p=>h1+=phCard(p,'chu','24h/24'));ouv.forEach(p=>h1+=phCard(p,'open',`Ferme à ${hf(p.e)}`));
+  document.getElementById('now-l').innerHTML=h1||'<div style="padding:12px;font-size:13px;color:var(--g2);">Consultez les CHU 24h/24.</div>';
+  let h2='';fer.slice(0,6).forEach(p=>h2+=phCard(p,'closed',`Ouvre à ${hf(p.s)}`));
+  document.getElementById('next-l').innerHTML=h2;
+  const q=document.getElementById('ph-q')?.value;if(q&&q.trim())searchPh(q);
+}
+
+function searchPh(q){
+  const inp=document.getElementById('ph-q');if(inp&&q)inp.value=q;
+  const ql=q.toLowerCase().trim();
+  const el=document.getElementById('sr-wrap');if(!ql){el.style.display='none';return;}
+  const now=new Date(),h=now.getHours(),j=now.getDay();
+  const chuF=CHU.filter(p=>p.q.toLowerCase().includes(ql)||p.n.toLowerCase().includes(ql)||p.v.toLowerCase().includes(ql));
+  const all=PH.filter(p=>p.q.toLowerCase().includes(ql)||p.n.toLowerCase().includes(ql)||p.v.toLowerCase().includes(ql));
+  const ouv=all.filter(p=>isOpen(p,h,j));const fer=all.filter(p=>!isOpen(p,h,j));
+  document.getElementById('sr-title').innerHTML=`<strong>${q}</strong> · <span style="color:var(--ok)">${chuF.length+ouv.length} ouvertes</span>`;
+  let html='';chuF.forEach(p=>html+=phCard(p,'chu','24h/24'));ouv.forEach(p=>html+=phCard(p,'open',`Ferme à ${hf(p.e)}`));fer.forEach(p=>html+=phCard(p,'closed',`Ouvre à ${hf(p.s)}`));
+  document.getElementById('sr-list').innerHTML=html||'<div style="padding:12px;font-size:13px;color:var(--g2);">Aucun résultat.</div>';
+  el.style.display='block';
+}
+
+// ── NAV ──
+function go(n,b){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  if(b)b.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function chip(el,g){document.querySelectorAll('#'+g+' .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function getChips(g){return[...document.querySelectorAll('#'+g+' .chip.on')].map(c=>c.textContent.trim()).join(', ');}
+function spin(id,on){document.getElementById(id).classList.toggle('on',on);}
+function show(id,txt){const e=document.getElementById(id);e.style.display='block';e.textContent=txt;}
+function hide(id){document.getElementById(id).style.display='none';}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3200);}
+
+// ── GROQ ──
+async function callGroq(prompt){
+  if(!GK){document.getElementById('km').classList.add('on');throw new Error('Configurez votre clé IA via ⚙️');}
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+GK},
+    body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[
+      {role:'system',content:'Tu es un médecin expert en médecine africaine et tropicale. Réponds TOUJOURS en français. Sois précis, direct et bref. Adapte aux réalités ivoiriennes (médicaments disponibles, prix en FCFA).'},
+      {role:'user',content:prompt}
+    ],max_tokens:900,temperature:0.3})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Erreur '+r.status);}
+  return(await r.json()).choices?.[0]?.message?.content||'Réponse vide.';
+}
+
+async function doDiag(){
+  const age=document.getElementById('d-age').value||'adulte';
+  const sexe=document.getElementById('d-sexe').value;
+  const sym=getChips('c-diag');const desc=document.getElementById('d-desc').value;
+  const duree=document.getElementById('d-duree').value;const ant=document.getElementById('d-ant').value;
+  if(!desc&&!sym)return toast('Décrivez vos symptômes.');
+  spin('sp-d',true);document.getElementById('rx').style.display='none';
+  try{
+    const res=await callGroq(`PATIENT: ${age}, ${sexe}. SYMPTÔMES: ${sym||'—'}. DESCRIPTION: ${desc||'—'}. DURÉE: ${duree}. ANTÉCÉDENTS: ${ant||'aucun'}.
+Réponse STRUCTURÉE et BRÈVE:
+🩺 MALADIE: [nom précis]
+⚠️ URGENCE: [CRITIQUE/ÉLEVÉ/MODÉRÉ/FAIBLE]
+🔬 EXAMENS:
+• [examen] — [où à Abidjan] — [~prix FCFA]
+💊 MÉDICAMENTS:
+• [Médicament] [dose] — [fréquence] — [durée] — [comment prendre]
+📋 Protocoles OMS | Consultez un médecin agréé.`);
+    document.getElementById('rx-txt').textContent=res;document.getElementById('rx').style.display='block';
+  }catch(e){document.getElementById('rx-txt').textContent='❌ '+e.message;document.getElementById('rx').style.display='block';}
+  spin('sp-d',false);
+}
+async function getMal(){
+  const n=document.getElementById('m-nom').value.trim();if(!n)return toast('Entrez une maladie.');
+  spin('sp-m',true);hide('r-m');
+  try{show('r-m',await callGroq(`Maladie: ${n}\nFiche BRÈVE:\n🦠 Cause | 🌡️ Symptômes | 💊 Traitement CI (dosages+FCFA) | 🛡️ Prévention | ⚠️ Quand aller à l'hôpital`));}
+  catch(e){show('r-m','❌ '+e.message);}spin('sp-m',false);
+}
+function qMal(n){document.getElementById('m-nom').value=n;go('mal',document.querySelectorAll('.nb')[2]);getMal();}
+async function getMed(){
+  const n=document.getElementById('med-nom').value.trim();const a=document.getElementById('med-age').value;
+  if(!n)return toast('Entrez un médicament.');
+  spin('sp-med',true);hide('r-med');
+  try{show('r-med',await callGroq(`Médicament: ${n}, Patient: ${a}\nFiche BRÈVE:\n💊 Indication | 📏 Posologie | ⚠️ Effets secondaires | 🚫 Contre-indications | 💰 Prix FCFA`));}
+  catch(e){show('r-med','❌ '+e.message);}spin('sp-med',false);
+}
+async function getPlante(){
+  const n=document.getElementById('pl-nom').value.trim();if(!n)return toast('Entrez une plante.');
+  spin('sp-pl',true);hide('r-pl');
+  try{show('r-pl',await callGroq(`Plante: ${n}\n🌿 Description | 💊 Propriétés | 🍵 Préparation | 📏 Dosage | ⚠️ Précautions`));}
+  catch(e){show('r-pl','❌ '+e.message);}spin('sp-pl',false);
+}
+async function getMat(){
+  const s=getChips('c-mat')||'grossesse';const q=document.getElementById('mat-q').value;
+  spin('sp-mat',true);hide('r-mat');
+  try{show('r-mat',await callGroq(`Sujet: ${s}. Question: ${q||'conseils généraux'}\nConseils BREFS Afrique:\n✅ À faire | 🚫 À éviter | 💊 Médicaments sûrs | ⚠️ Alarmes | 🏥 Quand consulter`));}
+  catch(e){show('r-mat','❌ '+e.message);}spin('sp-mat',false);
+}
+async function getNut(){
+  const c=document.getElementById('nut-c').value;const r=document.getElementById('nut-r').value||'Côte d\'Ivoire';
+  spin('sp-nut',true);hide('r-nut');
+  try{show('r-nut',await callGroq(`Condition: ${c}, Région: ${r}\nPlan BREF:\n🥗 Aliments locaux | 🚫 À éviter | 💰 Budget FCFA/jour | 📈 Résultats`));}
+  catch(e){show('r-nut','❌ '+e.message);}spin('sp-nut',false);
+}
+async function getUrg(){
+  const s=getChips('c-urg')||'arrêt cardiaque';
+  spin('sp-urg',true);hide('r-urg');
+  try{show('r-urg',await callGroq(`URGENCE: ${s}\nMax 5 étapes:\n📞 Appeler 15 ou 185\n1.[action]\n2.[action]\n3.[action]\n🚫 NE PAS: [chose]\n⏱ EN ATTENDANT: [conseil]`));}
+  catch(e){show('r-urg','❌ '+e.message);}spin('sp-urg',false);
+}
+
+// ── INIT ──
+window.onload=()=>{
+  if(USER){document.getElementById('gate').classList.add('off');initApp();}
+  updatePh();setInterval(updatePh,60000);
+};
+</script>
+</body>
+</html>
