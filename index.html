@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<meta name="theme-color" content="#0A6EFF">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="MediAfrique">
+<title>MediAfrique — Santé pour tous</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{--p:#0A6EFF;--pd:#0052CC;--pl:#E8F1FF;--pm:#99C0FF;--ink:#0D0D0D;--g1:#3D3D3D;--g2:#767676;--g3:#B0B0B0;--g4:#E8E8E8;--g5:#F5F5F5;--ok:#00A86B;--okl:#E6F9F3;--err:#E03434;--errl:#FDEAEA;--warn:#E08C00;--warnl:#FFF6E6;--r8:8px;--r12:12px;--r16:16px;--r20:20px;}
+body{font-family:'Manrope',sans-serif;background:var(--g5);color:var(--ink);min-height:100dvh;overflow-x:hidden;}
+#splash{position:fixed;inset:0;z-index:9999;background:var(--p);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .5s;}
+#splash.hide{opacity:0;pointer-events:none;}
+.spl-logo{width:80px;height:80px;background:rgba(255,255,255,.15);border-radius:24px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;animation:pulse 1.5s infinite;}
+.spl-logo svg{width:40px;height:40px;}
+.spl-name{font-size:28px;font-weight:800;color:#fff;}
+.spl-tag{font-size:13px;color:rgba(255,255,255,.7);margin-top:6px;}
+.spl-bar{width:120px;height:3px;background:rgba(255,255,255,.2);border-radius:2px;margin-top:40px;overflow:hidden;}
+.spl-prog{height:100%;background:#fff;border-radius:2px;animation:load 1.8s ease forwards;}
+@keyframes load{from{width:0}to{width:100%}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+@keyframes up{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+#offline-bar{position:fixed;top:0;left:0;right:0;z-index:500;background:#E03434;color:#fff;font-size:12px;font-weight:700;text-align:center;padding:8px;display:none;align-items:center;justify-content:center;gap:6px;}
+#offline-bar.show{display:flex;}
+
+#rating-modal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.5);display:none;align-items:flex-end;justify-content:center;}
+#rating-modal.on{display:flex;}
+.r-sheet{background:#fff;border-radius:20px 20px 0 0;padding:24px 20px 40px;width:100%;max-width:500px;text-align:center;}
+.r-bar{width:36px;height:4px;background:var(--g4);border-radius:2px;margin:0 auto 20px;}
+.stars{display:flex;justify-content:center;gap:10px;margin-bottom:20px;}
+.star{font-size:36px;cursor:pointer;filter:grayscale(1);transition:transform .2s;}
+.star.on{filter:grayscale(0);transform:scale(1.2);}
+.r-skip{font-size:13px;color:var(--g2);cursor:pointer;margin-top:10px;display:block;}
+.fab{position:fixed;bottom:80px;right:16px;width:46px;height:46px;border-radius:50%;background:var(--p);color:#fff;border:none;box-shadow:0 4px 16px rgba(10,110,255,.4);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:300;}
+
+header{background:#fff;border-bottom:1px solid var(--g4);position:sticky;top:0;z-index:200;}
+.hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;}
+.hdr-logo{width:36px;height:36px;background:var(--p);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.hdr-logo svg{width:18px;height:18px;}
+.hdr-title{font-size:17px;font-weight:800;}.hdr-title span{color:var(--p);}
+
+.nav{background:#fff;border-bottom:1px solid var(--g4);overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-row{display:flex;padding:0 8px;}
+.nb{padding:13px 12px 11px;border:none;background:none;font-family:'Manrope',sans-serif;font-size:12px;font-weight:700;color:var(--g2);white-space:nowrap;cursor:pointer;border-bottom:2.5px solid transparent;transition:all .18s;display:flex;align-items:center;gap:5px;}
+.nb.active{color:var(--p);border-bottom-color:var(--p);}
+.nb-ico{font-size:15px;}
+
+.wrap{padding:16px 14px 90px;max-width:680px;margin:0 auto;}
+.page{display:none;}.page.active{display:block;animation:up .2s ease;}
+
+.home-hero{background:var(--p);border-radius:var(--r20);padding:22px 20px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden;}
+.home-hero::after{content:'';position:absolute;right:-20px;top:-20px;width:120px;height:120px;background:rgba(255,255,255,.07);border-radius:50%;}
+.home-hero-label{font-size:11px;font-weight:700;letter-spacing:1px;color:rgba(255,255,255,.6);text-transform:uppercase;margin-bottom:8px;}
+.home-hero-title{font-size:24px;font-weight:800;line-height:1.25;margin-bottom:8px;}
+.home-hero-sub{font-size:13px;color:rgba(255,255,255,.7);line-height:1.7;}
+
+.qa-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.qa{background:#fff;border-radius:var(--r16);padding:16px;cursor:pointer;border:1.5px solid var(--g4);transition:all .15s;}
+.qa:active{transform:scale(.97);}
+.qa-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.qa-icon svg{width:20px;height:20px;}
+.qai-b{background:var(--pl);}.qai-r{background:var(--errl);}.qai-g{background:var(--okl);}.qai-w{background:var(--warnl);}
+.qa-title{font-size:14px;font-weight:800;margin-bottom:2px;}
+.qa-sub{font-size:11px;color:var(--g2);line-height:1.4;}
+.qa-arr{font-size:11px;font-weight:700;color:var(--p);margin-top:8px;display:flex;align-items:center;gap:3px;}
+
+.card{background:#fff;border-radius:var(--r16);padding:18px;margin-bottom:12px;border:1px solid var(--g4);}
+.card-hd{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--g4);}
+.card-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.card-ico svg{width:20px;height:20px;}
+.cib{background:var(--pl);}.cir{background:var(--errl);}.cig{background:var(--okl);}.ciw{background:var(--warnl);}
+.card-title{font-size:16px;font-weight:800;}
+.card-sub{font-size:12px;color:var(--g2);margin-top:2px;}
+
+.lbl{display:block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--g2);margin-bottom:6px;}
+input[type=text],input[type=number],select,textarea{width:100%;padding:13px 16px;border-radius:var(--r12);border:1.5px solid var(--g4);background:var(--g5);color:var(--ink);font-size:14px;font-family:'Manrope',sans-serif;font-weight:500;outline:none;margin-bottom:12px;transition:border-color .2s;appearance:none;}
+input:focus,select:focus,textarea:focus{border-color:var(--p);background:#fff;}
+textarea{resize:vertical;min-height:88px;line-height:1.6;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23767676' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px;border-radius:var(--r12);border:none;cursor:pointer;font-family:'Manrope',sans-serif;font-size:15px;font-weight:800;transition:all .15s;}
+.btn:active{transform:scale(.97);}
+.btn-p{background:var(--p);color:#fff;}.btn-ok{background:var(--ok);color:#fff;}.btn-err{background:var(--err);color:#fff;}
+
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:6px 0 14px;}
+.chip{padding:8px 14px;border-radius:20px;cursor:pointer;border:1.5px solid var(--g4);background:#fff;color:var(--g2);font-size:12px;font-weight:700;}
+.chip.on{border-color:var(--p);background:var(--pl);color:var(--p);}
+.chip-sm{padding:7px 12px;font-size:11px;}
+
+.spin{width:26px;height:26px;margin:20px auto;border:3px solid var(--pl);border-top-color:var(--p);border-radius:50%;animation:rot .6s linear infinite;display:none;}
+.spin.on{display:block;}
+@keyframes rot{to{transform:rotate(360deg);}}
+
+.rbox{border-radius:var(--r12);padding:16px;margin-top:12px;font-size:13px;line-height:1.9;white-space:pre-wrap;display:none;font-weight:500;}
+.rb{background:var(--pl);border:1.5px solid var(--pm);}
+.rg{background:var(--okl);border:1.5px solid rgba(0,168,107,.2);}
+.rr{background:var(--errl);border:1.5px solid rgba(224,52,52,.15);}
+
+.rx{background:#fff;border:2px solid var(--p);border-radius:var(--r16);padding:18px;margin-top:14px;display:none;}
+.rx-hd{display:flex;align-items:center;gap:12px;padding-bottom:13px;border-bottom:1px dashed var(--g4);margin-bottom:14px;}
+.rx-logo{width:42px;height:42px;background:var(--p);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.rx-logo svg{width:21px;height:21px;}
+.rx-name{font-size:15px;font-weight:800;color:var(--p);}
+.rx-sub{font-size:11px;color:var(--g2);margin-top:1px;}
+.rx-badges{margin-left:auto;display:flex;flex-direction:column;gap:3px;}
+.rx-badge{background:var(--pl);border:1px solid var(--pm);border-radius:6px;padding:2px 8px;font-size:9px;font-weight:800;color:var(--p);}
+.rx-body{font-size:13px;line-height:1.9;white-space:pre-wrap;}
+.rx-foot{margin-top:13px;padding-top:12px;border-top:1px dashed var(--g4);font-size:10px;color:var(--g2);text-align:center;line-height:1.8;}
+
+.urg-banner{background:var(--err);border-radius:var(--r16);padding:16px 18px;margin-bottom:14px;display:flex;gap:14px;align-items:center;color:#fff;}
+.urg-num{font-size:28px;font-weight:800;line-height:1.1;}
+.urg-label{font-size:11px;font-weight:700;opacity:.75;margin-bottom:3px;}
+.urg-desc{font-size:11px;opacity:.65;}
+.alarm{display:flex;gap:12px;padding:13px 14px;border-radius:var(--r12);margin-bottom:8px;}
+.al-r{background:var(--errl);border:1px solid rgba(224,52,52,.15);}
+.al-w{background:var(--warnl);border:1px solid rgba(224,140,0,.15);}
+.alarm-t{font-size:13px;font-weight:700;}
+.alarm-d{font-size:12px;color:var(--g2);margin-top:2px;line-height:1.5;}
+
+.ph-top{background:#fff;border-radius:var(--r16);border:1px solid var(--g4);padding:18px;margin-bottom:12px;display:flex;align-items:center;gap:16px;}
+.ph-clock{font-size:32px;font-weight:800;letter-spacing:2px;}
+.ph-day{font-size:11px;color:var(--g2);margin-top:3px;font-weight:600;}
+.ph-divider{width:1px;background:var(--g4);align-self:stretch;}
+.ph-count{font-size:18px;font-weight:800;color:var(--ok);}
+.ph-count-sub{font-size:12px;color:var(--g2);margin-top:2px;}
+.ph-search-wrap{position:relative;margin-bottom:0;}
+.ph-ico{position:absolute;left:14px;top:50%;transform:translateY(-55%);color:var(--g3);}
+.ph-ico svg{width:16px;height:16px;}
+.ph-search-wrap input{padding-left:40px;margin-bottom:0;}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.pill{padding:6px 13px;border-radius:20px;border:1.5px solid var(--g4);background:#fff;font-size:11px;font-weight:700;cursor:pointer;color:var(--g2);}
+.pill:active{background:var(--pl);border-color:var(--p);color:var(--p);}
+.phc{border-radius:var(--r12);padding:12px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:7px;}
+.phc-o{background:var(--okl);border:1px solid rgba(0,168,107,.18);}
+.phc-c{background:var(--errl);border:1px solid rgba(224,52,52,.12);}
+.phc-24{background:var(--pl);border:1px solid var(--pm);}
+.phc-name{font-size:13px;font-weight:700;}
+.phc-addr{font-size:11px;color:var(--g2);margin-top:2px;line-height:1.5;}
+.phc-tel{font-size:11px;color:var(--p);margin-top:2px;font-weight:700;}
+.phc-t{font-size:11px;font-weight:700;margin-top:3px;}
+.ptag{padding:4px 10px;border-radius:20px;font-size:9px;font-weight:800;flex-shrink:0;white-space:nowrap;}
+.tag-o{background:#C2F2E1;color:#00773F;}
+.tag-c{background:#FCCFCF;color:#B01A1A;}
+.tag-24{background:var(--pm);color:var(--pd);}
+
+.dis{background:#fff;border:1px solid var(--g4);border-radius:var(--r12);padding:14px;display:flex;gap:14px;cursor:pointer;margin-bottom:8px;}
+.dis-name{font-size:14px;font-weight:800;}
+.dis-zone{font-size:10px;font-weight:700;color:var(--p);text-transform:uppercase;letter-spacing:.4px;margin-top:2px;}
+.dis-desc{font-size:12px;color:var(--g2);margin-top:4px;line-height:1.5;}
+.sev{display:inline-block;margin-top:7px;padding:3px 10px;border-radius:20px;font-size:10px;font-weight:800;}
+.sev-r{background:var(--errl);color:var(--err);}
+.sev-w{background:var(--warnl);color:var(--warn);}
+
+.vacc{background:#fff;border:1px solid var(--g4);border-radius:var(--r12);padding:12px 14px;display:flex;gap:12px;align-items:center;margin-bottom:7px;}
+.vacc-dot{width:36px;height:36px;background:var(--pl);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.vacc-dot svg{width:18px;height:18px;}
+.vacc-age{font-size:13px;font-weight:800;}
+.vacc-shots{font-size:12px;color:var(--g2);margin-top:2px;}
+
+.about-hd{background:var(--p);border-radius:var(--r20);padding:28px 20px;text-align:center;color:#fff;margin-bottom:14px;}
+.about-av{width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 12px;}
+.about-name{font-size:22px;font-weight:800;}
+.about-sub{font-size:12px;opacity:.7;margin-top:5px;line-height:1.8;}
+.about-tag{display:inline-block;margin-top:12px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:6px 14px;font-size:11px;font-weight:700;}
+.irow{background:#fff;border:1px solid var(--g4);border-radius:var(--r12);padding:13px 14px;display:flex;gap:12px;align-items:center;margin-bottom:7px;}
+.irow-icon{width:34px;height:34px;border-radius:8px;background:var(--pl);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.irow-icon svg{width:16px;height:16px;}
+.irow-lbl{font-size:10px;font-weight:700;color:var(--g2);text-transform:uppercase;letter-spacing:.5px;}
+.irow-val{font-size:14px;font-weight:700;margin-top:2px;}
+.copy{background:var(--g5);border-radius:var(--r12);padding:16px;text-align:center;margin-top:6px;}
+.copy p{font-size:12px;color:var(--g2);line-height:2;}
+
+.chu-row{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--g4);font-size:13px;font-weight:600;}
+.chu-row:last-child{border-bottom:none;}
+
+.oms-item{border:1px solid var(--g4);border-radius:var(--r12);margin-bottom:8px;overflow:hidden;cursor:pointer;}
+.oms-head{display:flex;align-items:center;gap:10px;padding:12px 14px;}
+.oms-emoji{font-size:22px;flex-shrink:0;}
+.oms-info{flex:1;}
+.oms-name{font-size:13px;font-weight:800;}
+.oms-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+.oms-tag{font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;}
+.oms-chevron{flex-shrink:0;color:var(--g3);transition:transform .25s;}
+.oms-body{display:none;padding:0 14px 14px;border-top:1px solid var(--g4);}
+.oms-body.open{display:block;}
+.oms-item:has(.oms-body.open) .oms-chevron{transform:rotate(180deg);}
+.oms-step{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--g5);font-size:12px;line-height:1.6;}
+.oms-step:last-of-type{border-bottom:none;}
+.oms-num{width:20px;height:20px;border-radius:50%;background:var(--p);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.oms-warn{margin-top:8px;background:var(--warnl);border-radius:8px;padding:8px 10px;font-size:11px;color:var(--warn);font-weight:700;line-height:1.5;}
+
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:99999;opacity:0;transition:opacity .25s;max-width:88vw;text-align:center;pointer-events:none;}
+#toast.on{opacity:1;}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="spl-logo"><svg viewBox="0 0 32 32" fill="none"><rect x="12" y="2" width="8" height="28" rx="3" fill="white"/><rect x="2" y="12" width="28" height="8" rx="3" fill="white"/></svg></div>
+  <div class="spl-name">MediAfrique</div>
+  <div class="spl-tag">Votre santé, notre priorité 🇨🇮</div>
+  <div class="spl-bar"><div class="spl-prog"></div></div>
+</div>
+
+<!-- OFFLINE -->
+<div id="offline-bar">⚡ Mode hors connexion — l'IA est indisponible, les données restent accessibles</div>
+
+<!-- RATING -->
+<div id="rating-modal">
+  <div class="r-sheet">
+    <div class="r-bar"></div>
+    <div style="font-size:32px;margin-bottom:10px;">⭐</div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:4px;">Cette réponse t'a aidé ?</div>
+    <div style="font-size:13px;color:var(--g2);margin-bottom:20px;">Ton avis aide à améliorer MediAfrique</div>
+    <div class="stars">
+      <span class="star" onclick="rateStar(1)">⭐</span>
+      <span class="star" onclick="rateStar(2)">⭐</span>
+      <span class="star" onclick="rateStar(3)">⭐</span>
+      <span class="star" onclick="rateStar(4)">⭐</span>
+      <span class="star" onclick="rateStar(5)">⭐</span>
+    </div>
+    <textarea rows="3" id="r-comment" placeholder="Un commentaire ? (optionnel)" style="font-size:14px;"></textarea>
+    <button class="btn btn-p" onclick="submitRating()">Envoyer mon avis</button>
+    <span class="r-skip" onclick="closeRating()">Passer</span>
+  </div>
+</div>
+
+<button class="fab" onclick="openRating()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+
+<header>
+  <div class="hdr">
+    <div class="hdr-logo"><svg viewBox="0 0 32 32" fill="none"><rect x="12" y="2" width="8" height="28" rx="3" fill="white"/><rect x="2" y="12" width="28" height="8" rx="3" fill="white"/></svg></div>
+    <div class="hdr-title">Medi<span>Afrique</span></div>
+  </div>
+</header>
+
+<div class="nav">
+  <div class="nav-row">
+    <button class="nb active" onclick="go('home',this)"><span class="nb-ico">🏠</span>Accueil</button>
+    <button class="nb" onclick="go('diag',this)"><span class="nb-ico">🩺</span>Diagnostic</button>
+    <button class="nb" onclick="go('mal',this)"><span class="nb-ico">🦠</span>Maladies</button>
+    <button class="nb" onclick="go('med',this)"><span class="nb-ico">💊</span>Médicaments</button>
+    <button class="nb" onclick="go('mat',this)"><span class="nb-ico">👶</span>Maternité</button>
+    <button class="nb" onclick="go('nut',this)"><span class="nb-ico">🥗</span>Nutrition</button>
+    <button class="nb" onclick="go('urg',this)"><span class="nb-ico">🚨</span>Urgences</button>
+    <button class="nb" onclick="go('ph',this)"><span class="nb-ico">🏪</span>Pharmacies</button>
+    <button class="nb" onclick="go('about',this)"><span class="nb-ico">👤</span>À propos</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="home-hero">
+    <div class="home-hero-label">Santé · Côte d'Ivoire 🇨🇮</div>
+    <div class="home-hero-title" id="home-greeting">Bonjour 👋<br>Comment tu vas ?</div>
+    <div class="home-hero-sub">Tu as un souci de santé ? On est là.<br>Pharmacie, symptômes, urgence — pose ta question.</div>
+  </div>
+  <div class="qa-grid">
+    <div class="qa" onclick="go('diag',document.querySelectorAll('.nb')[1])">
+      <div class="qa-icon qai-b"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+      <div class="qa-title">Diagnostic</div><div class="qa-sub">Tu as quels symptômes ?</div>
+      <div class="qa-arr">Commencer <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+    <div class="qa" onclick="go('urg',document.querySelectorAll('.nb')[6])">
+      <div class="qa-icon qai-r"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+      <div class="qa-title">Urgences</div><div class="qa-sub">Que faire maintenant ?</div>
+      <div class="qa-arr" style="color:var(--err)">Accéder <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+    <div class="qa" onclick="go('ph',document.querySelectorAll('.nb')[7])">
+      <div class="qa-icon qai-g"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
+      <div class="qa-title">Pharmacies</div><div class="qa-sub">Près de chez toi</div>
+      <div class="qa-arr" style="color:var(--ok)">Voir <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+    <div class="qa" onclick="go('mal',document.querySelectorAll('.nb')[2])">
+      <div class="qa-icon qai-w"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/></svg></div>
+      <div class="qa-title">Maladies</div><div class="qa-sub">Paludisme, typhoïde...</div>
+      <div class="qa-arr" style="color:var(--warn)">Consulter <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd">
+      <div class="card-ico" style="background:#E8F5E9;"><svg viewBox="0 0 24 24" fill="none" stroke="#1976D2" stroke-width="2" width="20" height="20"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div><div class="card-title">Protocoles de traitement</div><div class="card-sub">Basé sur les recommandations OMS · adapté à la CI</div></div>
+      <div style="margin-left:auto;background:#E3F2FD;border:1px solid #90CAF9;border-radius:6px;padding:3px 8px;font-size:9px;font-weight:800;color:#1565C0;white-space:nowrap;">OMS 2027</div>
+    </div>
+
+    <div class="oms-item" onclick="this.querySelector('.oms-body').classList.toggle('open')">
+      <div class="oms-head"><span class="oms-emoji">🦟</span><div class="oms-info"><div class="oms-name">Paludisme non compliqué</div><div class="oms-tags"><span class="oms-tag" style="background:#FDEAEA;color:#C62828;">Priorité 1</span><span class="oms-tag" style="background:#E3F2FD;color:#1565C0;">P. falciparum</span></div></div><svg class="oms-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="oms-body">
+        <div class="oms-step"><span class="oms-num">1</span><div><strong>1er choix :</strong> Coartem® — 6 prises sur 3 jours selon le poids</div></div>
+        <div class="oms-step"><span class="oms-num">2</span><div><strong>Si Coartem pas dispo :</strong> Artésunate-Amodiaquine ou Artésunate-Méfloquine</div></div>
+        <div class="oms-step"><span class="oms-num">3</span><div><strong>Fièvre :</strong> Paracétamol 500mg toutes les 6h — l'aspirine est déconseillée</div></div>
+        <div class="oms-step"><span class="oms-num">4</span><div><strong>Suivi :</strong> Vérifier la guérison à J3, J7 et J28</div></div>
+        <div class="oms-warn">⚠ Fièvre > 39°C ou vomissements → hôpital sans attendre</div>
+      </div>
+    </div>
+
+    <div class="oms-item" onclick="this.querySelector('.oms-body').classList.toggle('open')">
+      <div class="oms-head"><span class="oms-emoji">💧</span><div class="oms-info"><div class="oms-name">Diarrhée aiguë & Choléra</div><div class="oms-tags"><span class="oms-tag" style="background:#FFF3E0;color:#E65100;">Priorité 1</span><span class="oms-tag" style="background:#E8F5E9;color:#2E7D32;">Réhydratation</span></div></div><svg class="oms-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="oms-body">
+        <div class="oms-step"><span class="oms-num">1</span><div><strong>SRO :</strong> 200–400 ml après chaque selle (adulte), 50–100 ml enfant</div></div>
+        <div class="oms-step"><span class="oms-num">2</span><div><strong>Zinc :</strong> 20 mg/j pendant 10–14 jours chez l'enfant &lt;5 ans</div></div>
+        <div class="oms-step"><span class="oms-num">3</span><div><strong>Choléra :</strong> Doxycycline 300 mg dose unique adulte, Azithromycine 20 mg/kg enfant</div></div>
+        <div class="oms-step"><span class="oms-num">4</span><div><strong>Manger :</strong> Ne pas arrêter de s'alimenter — éviter les sodas</div></div>
+        <div class="oms-warn">⚠ Yeux enfoncés, peau qui reste plissée → urgences immédiatement</div>
+      </div>
+    </div>
+
+    <div class="oms-item" onclick="this.querySelector('.oms-body').classList.toggle('open')">
+      <div class="oms-head"><span class="oms-emoji">🔴</span><div class="oms-info"><div class="oms-name">VIH — Traitement ARV 1ère ligne</div><div class="oms-tags"><span class="oms-tag" style="background:#FCE4EC;color:#880E4F;">Chronique</span><span class="oms-tag" style="background:#E8F5E9;color:#2E7D32;">Gratuit CI</span></div></div><svg class="oms-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><path d="M6 9l6 6 6-6"/></svg></div>
+      <div class="oms-body">
+        <div class="oms-step"><span class="oms-num">1</span><div><strong>Traitement :</strong> TDF + 3TC + DTG — 1 comprimé par jour</div></div>
+        <div class="oms-step"><span class="oms-num">2</span><div><strong>Alternative :</strong> TDF + 3TC + Efavirenz si DTG indisponible</div></div>
+        <div class="oms-step"><span class="oms-num">3</span><div><strong>Femme enceinte :</strong> DTG recommandé dès le 1er trimestre</div></div>
+        <div class="oms-step"><span class="oms-num">4</span><div><strong>Suivi :</strong> Charge virale à 6 mois, 12 mois, puis chaque année</div></div>
+        <div class="oms-warn">ℹ ARV gratuits dans les centres de santé agréés en Côte d'Ivoire</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;background:var(--pl);border-radius:var(--r12);padding:12px 14px;display:flex;gap:10px;align-items:center;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1565C0" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div style="font-size:11px;color:#1565C0;font-weight:600;line-height:1.6;">Basé sur les recommandations OMS 2027. Ça remplace pas une vraie consultation.</div>
+    </div>
+  </div>
+</div>
+
+<!-- DIAGNOSTIC -->
+<div class="page" id="page-diag">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cib"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div><div><div class="card-title">Diagnostic IA</div><div class="card-sub">Décrivez vos symptômes.</div></div></div>
+    <label class="lbl">Âge & Sexe</label>
+    <div class="row2"><input type="text" id="d-age" placeholder="Ex: 25 ans"><select id="d-sexe"><option>Homme</option><option>Femme</option><option>Enfant</option></select></div>
+    <label class="lbl">Symptômes</label>
+    <div class="chips" id="c-diag">
+      <div class="chip chip-sm on" onclick="chip(this,'c-diag')">Fièvre</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Maux de tête</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Nausées</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Toux</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Diarrhée</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-diag')">Fatigue</div>
+    </div>
+    <textarea id="d-desc" placeholder="Décrivez vos symptômes en détail..."></textarea>
+    <div class="row2">
+      <div><label class="lbl">Durée</label><select id="d-duree"><option>Moins de 24h</option><option>1–3 jours</option><option>4–7 jours</option><option>Plus d'une semaine</option></select></div>
+      <div><label class="lbl">Antécédents</label><input type="text" id="d-ant" placeholder="Diabète, HTA..."></div>
+    </div>
+    <button class="btn btn-p" onclick="doDiag()">Obtenir le diagnostic</button>
+    <div class="spin" id="sp-d"></div>
+    <div class="rx" id="rx">
+      <div class="rx-hd">
+        <div class="rx-logo"><svg viewBox="0 0 32 32" fill="none"><rect x="12" y="2" width="8" height="28" rx="3" fill="white"/><rect x="2" y="12" width="28" height="8" rx="3" fill="white"/></svg></div>
+        <div><div class="rx-name">MediAfrique AI</div><div class="rx-sub">Assistant Médical · Côte d'Ivoire 🇨🇮</div></div>
+        <div class="rx-badges"><div class="rx-badge">OMS</div><div class="rx-badge">Afrique</div></div>
+      </div>
+      <div class="rx-body" id="rx-txt"></div>
+      <div class="rx-foot">⚠ Informatif — Consultez un médecin agréé.<br>Créé par <strong>Tuo Stéphane</strong> · Anyama 🇨🇮</div>
+    </div>
+  </div>
+</div>
+
+<!-- MALADIES -->
+<div class="page" id="page-mal">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div><div class="card-title">Rechercher une maladie</div><div class="card-sub">Informations médicales complètes.</div></div></div>
+    <input type="text" id="m-nom" placeholder="Ex: paludisme, typhoïde, choléra...">
+    <button class="btn btn-p" onclick="getMal()">Rechercher</button>
+    <div class="spin" id="sp-m"></div>
+    <div class="rbox rb" id="r-m"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div><div class="card-title">Maladies prioritaires</div></div></div>
+    <div class="dis" onclick="qMal('Paludisme')"><span style="font-size:24px;flex-shrink:0">🦟</span><div><div class="dis-name">Paludisme</div><div class="dis-zone">Afrique subsaharienne</div><div class="dis-desc">Fièvre, frissons, sueurs. Traitement: ACT.</div><span class="sev sev-r">Urgent</span></div></div>
+    <div class="dis" onclick="qMal('Typhoïde')"><span style="font-size:24px;flex-shrink:0">🌡️</span><div><div class="dis-name">Typhoïde</div><div class="dis-zone">Eau non potable</div><div class="dis-desc">Fièvre prolongée. Traitement: Ciprofloxacine.</div><span class="sev sev-r">Sérieux</span></div></div>
+    <div class="dis" onclick="qMal('Choléra')"><span style="font-size:24px;flex-shrink:0">💧</span><div><div class="dis-name">Choléra</div><div class="dis-zone">Eau contaminée</div><div class="dis-desc">Diarrhée massive. Réhydratation immédiate.</div><span class="sev sev-r">Urgent</span></div></div>
+    <div class="dis" onclick="qMal('Méningite')"><span style="font-size:24px;flex-shrink:0">🧠</span><div><div class="dis-name">Méningite</div><div class="dis-zone">Ceinture sahélienne</div><div class="dis-desc">Raideur nuque, fièvre. Hôpital immédiat.</div><span class="sev sev-r">Critique</span></div></div>
+  </div>
+</div>
+
+<!-- MÉDICAMENTS -->
+<div class="page" id="page-med">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cig"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="card-title">Information médicament</div><div class="card-sub">Dosage, effets, précautions.</div></div></div>
+    <input type="text" id="med-nom" placeholder="Ex: Paracétamol, Amoxicilline, Coartem...">
+    <select id="med-age"><option>Nourrisson</option><option>Enfant</option><option selected>Adulte</option><option>Personne âgée</option><option>Femme enceinte</option></select>
+    <button class="btn btn-ok" onclick="getMed()">Obtenir les informations</button>
+    <div class="spin" id="sp-med"></div>
+    <div class="rbox rg" id="r-med"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cig"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/></svg></div><div><div class="card-title">Plantes médicinales africaines</div></div></div>
+    <input type="text" id="pl-nom" placeholder="Ex: Moringa, Neem, Kinkeliba...">
+    <button class="btn btn-ok" onclick="getPlante()">Rechercher</button>
+    <div class="spin" id="sp-pl"></div>
+    <div class="rbox rg" id="r-pl"></div>
+  </div>
+</div>
+
+<!-- MATERNITÉ -->
+<div class="page" id="page-mat">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cib"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div><div class="card-title">Santé Maternelle & Infantile</div></div></div>
+    <div class="chips" id="c-mat">
+      <div class="chip on" onclick="chip(this,'c-mat')">Grossesse</div>
+      <div class="chip" onclick="chip(this,'c-mat')">Allaitement</div>
+      <div class="chip" onclick="chip(this,'c-mat')">Nourrisson</div>
+      <div class="chip" onclick="chip(this,'c-mat')">Fièvre enfant</div>
+    </div>
+    <textarea id="mat-q" placeholder="Votre question..."></textarea>
+    <button class="btn btn-p" onclick="getMat()">Obtenir les conseils</button>
+    <div class="spin" id="sp-mat"></div>
+    <div class="rbox rb" id="r-mat"></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico ciw"><svg viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div><div><div class="card-title">Calendrier vaccinal enfant</div></div></div>
+    <div class="vacc"><div class="vacc-dot"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="vacc-age">Naissance</div><div class="vacc-shots">BCG + Polio oral + Hépatite B</div></div></div>
+    <div class="vacc"><div class="vacc-dot"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="vacc-age">6 semaines</div><div class="vacc-shots">Pentavalent + Pneumocoque + Rotavirus</div></div></div>
+    <div class="vacc"><div class="vacc-dot"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="vacc-age">9 mois</div><div class="vacc-shots">Rougeole + Fièvre jaune + Méningite A</div></div></div>
+    <div class="vacc"><div class="vacc-dot"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div><div class="vacc-age">18 mois</div><div class="vacc-shots">Rappel Rougeole + Polio + DTP</div></div></div>
+  </div>
+</div>
+
+<!-- NUTRITION -->
+<div class="page" id="page-nut">
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cig"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></div><div><div class="card-title">Nutrition Thérapeutique</div><div class="card-sub">Plan alimentaire médicalisé.</div></div></div>
+    <select id="nut-c"><option>Malnutrition enfant</option><option>Diabète type 2</option><option>Hypertension</option><option>Anémie</option><option>Grossesse</option><option>Convalescence</option><option>Obésité</option></select>
+    <input type="text" id="nut-r" placeholder="Votre pays (ex: Côte d'Ivoire)">
+    <button class="btn btn-ok" onclick="getNut()">Générer le plan</button>
+    <div class="spin" id="sp-nut"></div>
+    <div class="rbox rg" id="r-nut"></div>
+  </div>
+</div>
+
+<!-- URGENCES -->
+<div class="page" id="page-urg">
+  <div class="urg-banner">
+    <div><div class="urg-label">URGENCE · CÔTE D'IVOIRE</div><div class="urg-num">15 · 185 · 180</div><div class="urg-desc">SAMU · Police Secours · Pompiers</div></div>
+    <div style="margin-left:auto;font-size:40px;">🚑</div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div><div class="card-title">Premiers Secours</div><div class="card-sub">Sélectionnez la situation.</div></div></div>
+    <div class="chips" id="c-urg">
+      <div class="chip chip-sm on" onclick="chip(this,'c-urg')">Arrêt cardiaque</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Hémorragie</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Brûlure grave</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Perte conscience</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Morsure serpent</div>
+      <div class="chip chip-sm" onclick="chip(this,'c-urg')">Accouchement urgent</div>
+    </div>
+    <button class="btn btn-err" onclick="getUrg()">Gestes d'urgence immédiats</button>
+    <div class="spin" id="sp-urg"></div>
+    <div class="rbox rr" id="r-urg"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="card-title">Hôpital le plus proche</div><div class="card-sub">Entre ta commune ou ton quartier</div></div></div>
+    <div class="ph-search-wrap">
+      <span class="ph-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+      <input type="text" id="hosp-q" placeholder="Ex: Cocody, Abobo, Bouaké..." oninput="searchHosp(this.value)">
+    </div>
+    <div class="pills" style="margin-bottom:4px;">
+      <span class="pill" onclick="setHosp('Cocody')">Cocody</span>
+      <span class="pill" onclick="setHosp('Abobo')">Abobo</span>
+      <span class="pill" onclick="setHosp('Yopougon')">Yopougon</span>
+      <span class="pill" onclick="setHosp('Adjamé')">Adjamé</span>
+      <span class="pill" onclick="setHosp('Plateau')">Plateau</span>
+      <span class="pill" onclick="setHosp('Treichville')">Treichville</span>
+      <span class="pill" onclick="setHosp('Marcory')">Marcory</span>
+      <span class="pill" onclick="setHosp('Bouaké')">Bouaké</span>
+      <span class="pill" onclick="setHosp('Yamoussoukro')">Yamoussoukro</span>
+      <span class="pill" onclick="setHosp('San-Pédro')">San-Pédro</span>
+    </div>
+    <div id="hosp-results"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cir"><svg viewBox="0 0 24 24" fill="none" stroke="var(--err)" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div><div class="card-title">Signes d'alarme</div></div></div>
+    <div class="alarm al-r"><div style="flex-shrink:0;font-size:18px">🫀</div><div><div class="alarm-t">Douleur poitrine + bras gauche</div><div class="alarm-d">Infarctus possible → Urgences immédiatement</div></div></div>
+    <div class="alarm al-r"><div style="flex-shrink:0;font-size:18px">🧠</div><div><div class="alarm-t">Paralysie soudaine + trouble parole</div><div class="alarm-d">AVC possible → Chaque minute est vitale</div></div></div>
+    <div class="alarm al-r"><div style="flex-shrink:0;font-size:18px">🌡️</div><div><div class="alarm-t">Fièvre 40°C+ avec raideur nuque</div><div class="alarm-d">Méningite possible → Hôpital immédiat</div></div></div>
+  </div>
+</div>
+
+<!-- PHARMACIES -->
+<div class="page" id="page-ph">
+  <div class="ph-top">
+    <div><div class="ph-clock" id="ph-t">--:--</div><div class="ph-day" id="ph-d">—</div></div>
+    <div class="ph-divider"></div>
+    <div><div class="ph-count" id="ph-c">—</div><div class="ph-count-sub">pharmacies disponibles</div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cib"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></div><div><div class="card-title">Rechercher une pharmacie</div></div></div>
+    <div class="ph-search-wrap">
+      <span class="ph-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+      <input type="text" id="ph-q" placeholder="Quartier, commune ou ville..." oninput="searchPh(this.value)">
+    </div>
+    <div class="pills">
+      <span class="pill" onclick="searchPh('Plateau')">Plateau</span>
+      <span class="pill" onclick="searchPh('Cocody')">Cocody</span>
+      <span class="pill" onclick="searchPh('Angré')">Angré</span>
+      <span class="pill" onclick="searchPh('Adjamé')">Adjamé</span>
+      <span class="pill" onclick="searchPh('Abobo')">Abobo</span>
+      <span class="pill" onclick="searchPh('Yopougon')">Yopougon</span>
+      <span class="pill" onclick="searchPh('Marcory')">Marcory</span>
+      <span class="pill" onclick="searchPh('Treichville')">Treichville</span>
+      <span class="pill" onclick="searchPh('Anyama')">Anyama</span>
+      <span class="pill" onclick="searchPh('Bouaké')">Bouaké</span>
+      <span class="pill" onclick="searchPh('Yamoussoukro')">Yamoussoukro</span>
+      <span class="pill" onclick="searchPh('Daloa')">Daloa</span>
+      <span class="pill" onclick="searchPh('Korhogo')">Korhogo</span>
+      <span class="pill" onclick="searchPh('San-Pédro')">San-Pédro</span>
+    </div>
+    <div id="sr-wrap" style="margin-top:14px;display:none;"><div id="sr-title" style="font-size:14px;font-weight:800;margin-bottom:10px;"></div><div id="sr-list"></div></div>
+  </div>
+  <div class="card">
+    <div class="card-hd"><div class="card-ico cig"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ok)" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="card-title" id="now-t">Ouvertes maintenant</div></div></div>
+    <div id="now-l"></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<div class="page" id="page-about">
+  <div class="about-hd">
+    <div class="about-av">👨‍💻</div>
+    <div class="about-name">Tuo Stéphane</div>
+    <div class="about-sub">Élève en Terminale C<br>Lycée Moderne Alassane Ouattara d'Anyama<br>Côte d'Ivoire 🇨🇮</div>
+    <div class="about-tag">Développeur & Innovateur Africain</div>
+  </div>
+  <div class="irow"><div class="irow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg></div><div><div class="irow-lbl">Nationalité</div><div class="irow-val">Ivoirien · Côte d'Ivoire</div></div></div>
+  <div class="irow"><div class="irow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg></div><div><div class="irow-lbl">École</div><div class="irow-val">Lycée Moderne A. Ouattara d'Anyama</div></div></div>
+  <div class="irow"><div class="irow-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--p)" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div><div class="irow-lbl">Mission</div><div class="irow-val">Mettre l'IA au service des Africains</div></div></div>
+  <div class="copy"><p>© 2027 MediAfrique AI · Créé par <strong>Tuo Stéphane</strong><br>Anyama, Côte d'Ivoire 🇨🇮</p></div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+const _a='gsk_ncXJOZBd6qg1Z2y4KX';const _b='ItWGdyb3FYl8L6TpmA5n';const _c='JvsPU27y0aEzRp';
+let GK=_a+_b+_c;
+
+const PH=[
+  {n:"Pharmacie du Plateau",q:"Plateau",a:"Rue des Banques",t:"20 21 23 77",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Ivoire",q:"Plateau",a:"Bd Roume",t:"20 22 05 60",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Plateau",q:"Plateau",a:"Appeler le 170",t:"170",v:"Abidjan",s:20,e:8,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Rédemption",q:"Cocody Angré",a:"Angré Château",t:"",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Les Arums",q:"Cocody Angré",a:"Angré 8ème Tranche",t:"27 22 50 66 40",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Les 3 Sources",q:"Cocody Angré",a:"Carrefour Djorobité",t:"27 22 89 99 71",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Arnica",q:"Cocody Riviera",a:"Riviera II",t:"22 59 56 78",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Hosanna",q:"Cocody Riviera",a:"Riviera Triangle",t:"27 22 55 25 59",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Riviera Golf",q:"Cocody Riviera",a:"Riviera Golf",t:"",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Cocody II Plateaux",q:"Cocody 2 Plateaux",a:"Boulevard Latrille",t:"",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie CHU Cocody",q:"Cocody",a:"Enceinte CHU de Cocody",t:"22 44 90 00",v:"Abidjan",s:0,e:24,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Cocody",q:"Cocody",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:8,j:[5,6,0]},
+  {n:"Pharmacie Adjamé Grand Marché",q:"Adjamé",a:"Grand Marché d'Adjamé",t:"",v:"Abidjan",s:7,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Sarah",q:"Adjamé",a:"Route du Zoo",t:"20 39 03 57",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Adjamé",q:"Adjamé",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:7,j:[5,6,0]},
+  {n:"Pharmacie Abobo Santé",q:"Abobo Gare",a:"Face Hôpital Général d'Abobo",t:"27 24 39 13 84",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Les 4 Saisons",q:"Abobo Dokui",a:"Abobo Dokui",t:"58 60 90 30",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Sainte Odile",q:"Abobo Dokui",a:"Carrefour Clinique Centrale d'Abobo",t:"24 39 29 97",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Saint Sauveur",q:"Abobo Kennedy",a:"Quartier Kennedy",t:"24 48 47 41",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Abobo",q:"Abobo",a:"Appeler le 170",t:"170",v:"Abidjan",s:20,e:8,j:[5,6,0]},
+  {n:"Pharmacie Eliel",q:"Anyama",a:"Face à la gare routière",t:"07 93 52 15",v:"Anyama",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Ikhlas",q:"Yopougon Gesco",a:"Derrière la Manutention Africaine",t:"07 78 38 87 17",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Ségaï",q:"Yopougon Wassakara",a:"Face marché de Wassakara",t:"23 52 21 10",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Yopougon",q:"Yopougon",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:8,j:[5,6,0]},
+  {n:"Pharmacie Métropole",q:"Marcory",a:"Derrière ORCA DECO",t:"27 21 39 27 19",v:"Abidjan",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Marcory",q:"Marcory",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:8,j:[5,6,0]},
+  {n:"Pharmacie Victoire Marie",q:"Treichville",a:"Terminus SOTRA",t:"27 22 48 68 91",v:"Abidjan",s:7,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie CHU Treichville",q:"Treichville",a:"Enceinte CHU Treichville",t:"21 24 91 22",v:"Abidjan",s:0,e:24,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Treichville",q:"Treichville",a:"Appeler le 170",t:"170",v:"Abidjan",s:21,e:7,j:[5,6,0]},
+  {n:"Pharmacie Anani",q:"Port-Bouët",a:"Anani, Carrefour Cissé",t:"07 78 54 34 66",v:"Abidjan",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Saint Armel du Palais",q:"Bingerville",a:"100m Palais de Justice",t:"05 65 44 81 81",v:"Bingerville",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Centrale Bouaké",q:"Bouaké",a:"Centre ville Bouaké",t:"31 63 21 90",v:"Bouaké",s:8,e:21,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Bouaké",q:"Bouaké",a:"Appeler le 170",t:"170",v:"Bouaké",s:21,e:8,j:[5,6,0]},
+  {n:"Pharmacie Yamoussoukro Centre",q:"Yamoussoukro",a:"Centre ville Yamoussoukro",t:"30 64 01 26",v:"Yamoussoukro",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de Garde Yamoussoukro",q:"Yamoussoukro",a:"Appeler le 170",t:"170",v:"Yamoussoukro",s:20,e:8,j:[5,6,0]},
+  {n:"Pharmacie Sainte Rita Daloa",q:"Daloa",a:"Rue du Commerce, Daloa",t:"32 78 22 90",v:"Daloa",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Balmer San-Pédro",q:"San-Pédro",a:"Quartier Balmer",t:"34 71 07 68",v:"San-Pédro",s:8,e:20,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie de la Mosquée Korhogo",q:"Korhogo",a:"Face grande mosquée",t:"36 86 09 21",v:"Korhogo",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Man Centre",q:"Man",a:"Centre ville Man",t:"33 79 08 53",v:"Man",s:8,e:19,j:[0,1,2,3,4,5,6]},
+  {n:"Pharmacie Saint Joseph Soubré",q:"Soubré",a:"Carrefour Doboa",t:"07 57 49 38 33",v:"Soubré",s:8,e:19,j:[0,1,2,3,4,5,6]},
+];
+
+const CHU=[
+  {n:"CHU de Cocody",q:"Cocody",a:"Bd de l'Université, Cocody",t:"22 44 90 00",v:"Abidjan",type:"public"},
+  {n:"CHU de Treichville",q:"Treichville",a:"Boulevard De Marseille",t:"21 24 91 22",v:"Abidjan",type:"public"},
+  {n:"CHU de Yopougon",q:"Yopougon",a:"Yopougon",t:"23 46 64 54",v:"Abidjan",type:"public"},
+  {n:"Hôpital de Port-Bouët",q:"Port-Bouët",a:"Abidjan, Port-Bouët",t:"21 27 85 00",v:"Abidjan",type:"public"},
+  {n:"Institut de Cardiologie",q:"Plateau",a:"Plateau, Abidjan",t:"20 31 56 20",v:"Abidjan",type:"public"},
+  {n:"Hôpital Psychiatrique Bingerville",q:"Bingerville",a:"Bingerville",t:"",v:"Abidjan",type:"public"},
+  {n:"SAMU Abidjan",q:"Abidjan",a:"Tout Abidjan",t:"15",v:"Abidjan",type:"public"},
+  {n:"Pompiers",q:"Abidjan",a:"Tout Abidjan",t:"180",v:"Abidjan",type:"public"},
+  {n:"PISAM",q:"Cocody",a:"Abidjan, Cocody",t:"22 44 51 32",v:"Abidjan",type:"privé"},
+  {n:"Clinique Avicenne",q:"Marcory",a:"Abidjan, Marcory",t:"21 26 04 16",v:"Abidjan",type:"privé"},
+  {n:"CMC Biétry",q:"Marcory Biétry",a:"Abidjan, Marcory Biétry",t:"21 25 25 60",v:"Abidjan",type:"privé"},
+  {n:"CHU de Bouaké",q:"Bouaké",a:"Bouaké",t:"31 63 21 90",v:"Bouaké",type:"public"},
+  {n:"CHR de Daloa",q:"Daloa",a:"Daloa",t:"32 78 22 90",v:"Daloa",type:"public"},
+  {n:"CHR de Yamoussoukro",q:"Yamoussoukro",a:"Yamoussoukro",t:"30 64 01 26",v:"Yamoussoukro",type:"public"},
+  {n:"CHR de Gagnoa",q:"Gagnoa",a:"Gagnoa",t:"32 77 23 62",v:"Gagnoa",type:"public"},
+  {n:"CHR de San-Pédro",q:"San-Pédro",a:"San-Pédro",t:"34 71 07 68",v:"San-Pédro",type:"public"},
+  {n:"CHR de Korhogo",q:"Korhogo",a:"Korhogo",t:"36 86 18 44",v:"Korhogo",type:"public"},
+  {n:"CHR de Bondoukou",q:"Bondoukou",a:"Bondoukou",t:"35 91 51 78",v:"Bondoukou",type:"public"},
+  {n:"CHR de Divo",q:"Divo",a:"Divo",t:"32 76 03 53",v:"Divo",type:"public"},
+  {n:"CHR de Dimbokro",q:"Dimbokro",a:"Dimbokro",t:"30 62 50 33",v:"Dimbokro",type:"public"},
+  {n:"CHR de Guiglo",q:"Guiglo",a:"Guiglo",t:"33 70 50 63",v:"Guiglo",type:"public"},
+  {n:"CHR d'Odienné",q:"Odienné",a:"Odienné",t:"33 70 81 95",v:"Odienné",type:"public"},
+  {n:"Hôpital Protestant de Dabou",q:"Dabou",a:"Dabou",t:"23 57 23 15",v:"Dabou",type:"public"},
+];
+
+function isOpen(p,h,j){if(!p.j.includes(j))return false;return p.s<p.e?h>=p.s&&h<p.e:h>=p.s||h<p.e;}
+function hf(h){return String(h).padStart(2,'0')+'h00';}
+function phCard(p,type,ti){
+  const cls=type==='chu'?'phc-24':type==='open'?'phc-o':'phc-c';
+  const tag=type==='chu'?'<span class="ptag tag-24">24h/24</span>':type==='open'?'<span class="ptag tag-o">Ouvert</span>':'<span class="ptag tag-c">Fermé</span>';
+  const tc=type==='closed'?'color:var(--err)':'color:var(--ok)';
+  return`<div class="phc ${cls}"><div style="flex:1;min-width:0;"><div class="phc-name">${p.n}</div><div class="phc-addr">📍 ${p.q}${p.v&&p.v!==p.q?' · '+p.v:''}</div>${p.a?`<div class="phc-addr">${p.a}</div>`:''} ${p.t?`<div class="phc-tel">📞 ${p.t}</div>`:''} ${ti?`<div class="phc-t" style="${tc}">⏰ ${ti}</div>`:''}</div>${tag}</div>`;
+}
+
+function updatePh(){
+  const now=new Date(),h=now.getHours(),m=now.getMinutes(),j=now.getDay();
+  let sal='Bonsoir 🌙';
+  if(h>=5&&h<12)sal='Bonjour 🌤️';
+  else if(h>=12&&h<18)sal='Bon après-midi 😊';
+  else if(h>=18&&h<22)sal='Bonsoir 👋';
+  const gr=document.getElementById('home-greeting');
+  if(gr)gr.innerHTML=`${sal}<br>Comment tu vas ?`;
+  const jours=['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const mois=['jan','fév','mar','avr','mai','juin','juil','aoû','sep','oct','nov','déc'];
+  document.getElementById('ph-t').textContent=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+  document.getElementById('ph-d').textContent=`${jours[j]} ${now.getDate()} ${mois[now.getMonth()]}`;
+  const ouv=PH.filter(p=>isOpen(p,h,j));
+  document.getElementById('ph-c').textContent=ouv.length+CHU.length;
+  document.getElementById('now-t').textContent=`${ouv.length+CHU.length} ouvertes maintenant`;
+  let h1='';CHU.forEach(p=>h1+=phCard(p,'chu','24h/24'));ouv.slice(0,8).forEach(p=>h1+=phCard(p,'open',`Ferme à ${hf(p.e)}`));
+  document.getElementById('now-l').innerHTML=h1;
+}
+
+function setHosp(val){document.getElementById('hosp-q').value=val;searchHosp(val);}
+function searchHosp(q){
+  const box=document.getElementById('hosp-results');
+  if(!q||q.trim().length<2){box.innerHTML='';return;}
+  const s=q.toLowerCase().trim();
+  const res=CHU.filter(h=>h.n.toLowerCase().includes(s)||h.q.toLowerCase().includes(s)||h.v.toLowerCase().includes(s));
+  if(!res.length){box.innerHTML=`<div style="padding:14px;text-align:center;color:var(--g2);font-size:13px;">Aucun résultat pour "<strong>${q}</strong>"</div>`;return;}
+  const pub=res.filter(h=>h.type==='public');
+  const prv=res.filter(h=>h.type==='privé');
+  const card=h=>`<div style="border:1.5px solid ${h.type==='privé'?'#E1BEE7':'#FFCDD2'};border-radius:var(--r12);padding:12px 14px;margin-bottom:8px;background:${h.type==='privé'?'#FAF5FF':'#FFF8F8'};"><div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><span style="font-size:18px;">${h.type==='privé'?'🏨':'🏥'}</span><div style="font-size:13px;font-weight:800;flex:1;">${h.n}</div><span style="background:${h.type==='privé'?'#E1BEE7':'#FDEAEA'};color:${h.type==='privé'?'#6A1B9A':'var(--err)'};border-radius:6px;padding:2px 7px;font-size:9px;font-weight:800;">${h.type==='privé'?'PRIVÉ':'PUBLIC'}</span></div><div style="font-size:11px;color:var(--g2);margin-left:26px;margin-bottom:${h.t?'10':'0'}px;">📍 ${h.a||h.q+', '+h.v}</div>${h.t?`<a href="tel:${h.t.replace(/\s/g,'')}" style="display:flex;align-items:center;justify-content:center;gap:8px;background:var(--err);color:#fff;border-radius:10px;padding:11px;text-decoration:none;font-size:13px;font-weight:800;margin-top:8px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.77a16 16 0 0 0 6.32 6.32l.86-.86a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Appeler — ${h.t}</a>`:`<div style="background:var(--g5);border-radius:10px;padding:9px;font-size:12px;color:var(--g2);font-weight:600;text-align:center;margin-top:8px;">Appeler le <strong style="color:var(--err)">15</strong> (SAMU) ou <strong style="color:var(--err)">185</strong></div>`}</div>`;
+  let html=`<div style="font-size:11px;font-weight:700;color:var(--g2);margin:10px 0 8px;">${res.length} établissement${res.length>1?'s':''} trouvé${res.length>1?'s':''}</div>`;
+  if(pub.length)html+=`<div style="font-size:10px;font-weight:800;color:var(--err);letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;">🏥 Hôpitaux publics</div>`+pub.map(card).join('');
+  if(prv.length)html+=`<div style="font-size:10px;font-weight:800;color:#6A1B9A;letter-spacing:.5px;text-transform:uppercase;margin:10px 0 6px;">🏨 Cliniques privées</div>`+prv.map(card).join('');
+  box.innerHTML=html;
+}
+
+function searchPh(q){
+  const inp=document.getElementById('ph-q');if(inp&&q)inp.value=q;
+  const ql=q.toLowerCase().trim();
+  const el=document.getElementById('sr-wrap');if(!ql){el.style.display='none';return;}
+  const now=new Date(),h=now.getHours(),j=now.getDay();
+  const all=PH.filter(p=>p.q.toLowerCase().includes(ql)||p.n.toLowerCase().includes(ql)||p.v.toLowerCase().includes(ql));
+  const ouv=all.filter(p=>isOpen(p,h,j));const fer=all.filter(p=>!isOpen(p,h,j));
+  document.getElementById('sr-title').innerHTML=`<strong>${q}</strong> · <span style="color:var(--ok)">${ouv.length} ouvertes</span>`;
+  let html='';ouv.forEach(p=>html+=phCard(p,'open',`Ferme à ${hf(p.e)}`));fer.forEach(p=>html+=phCard(p,'closed',`Ouvre à ${hf(p.s)}`));
+  document.getElementById('sr-list').innerHTML=html||'<div style="padding:12px;font-size:13px;color:var(--g2);">Aucun résultat.</div>';
+  el.style.display='block';
+}
+
+function go(n,b){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+n).classList.add('active');
+  if(b)b.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function chip(el,g){document.querySelectorAll('#'+g+' .chip').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+function getChips(g){return[...document.querySelectorAll('#'+g+' .chip.on')].map(c=>c.textContent.trim()).join(', ');}
+function spin(id,on){document.getElementById(id).classList.toggle('on',on);}
+function show(id,txt){const e=document.getElementById(id);e.style.display='block';e.textContent=txt;setTimeout(()=>{if(!document.getElementById('rating-modal').classList.contains('on'))openRating();},8000);}
+function hide(id){document.getElementById(id).style.display='none';}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('on'),3200);}
+
+async function callGroq(prompt){
+  const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+GK},
+    body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[
+      {role:'system',content:'Tu es un médecin expert en médecine africaine et tropicale. Réponds TOUJOURS en français. Sois précis, direct et bref. Adapte aux réalités ivoiriennes.'},
+      {role:'user',content:prompt}
+    ],max_tokens:900,temperature:0.3})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'Erreur '+r.status);}
+  return(await r.json()).choices?.[0]?.message?.content||'Réponse vide.';
+}
+
+async function doDiag(){
+  const age=document.getElementById('d-age').value||'adulte';
+  const sexe=document.getElementById('d-sexe').value;
+  const sym=getChips('c-diag');const desc=document.getElementById('d-desc').value;
+  const duree=document.getElementById('d-duree').value;const ant=document.getElementById('d-ant').value;
+  if(!desc&&!sym)return toast('Décrivez vos symptômes.');
+  spin('sp-d',true);document.getElementById('rx').style.display='none';
+  try{
+    const res=await callGroq(`PATIENT: ${age}, ${sexe}. SYMPTÔMES: ${sym||'—'}. DESCRIPTION: ${desc||'—'}. DURÉE: ${duree}. ANTÉCÉDENTS: ${ant||'aucun'}.\n🩺 MALADIE: [nom]\n⚠️ URGENCE: [niveau]\n🔬 EXAMENS:\n• [examen]\n💊 MÉDICAMENTS:\n• [Médicament] [dose] [durée]\n📋 Protocoles OMS | Consultez un médecin agréé.`);
+    document.getElementById('rx-txt').textContent=res;document.getElementById('rx').style.display='block';
+  }catch(e){document.getElementById('rx-txt').textContent='❌ '+e.message;document.getElementById('rx').style.display='block';}
+  spin('sp-d',false);
+}
+async function getMal(){
+  const n=document.getElementById('m-nom').value.trim();if(!n)return toast('Entrez une maladie.');
+  spin('sp-m',true);hide('r-m');
+  try{show('r-m',await callGroq(`Maladie: ${n}\n🦠 Cause | 🌡️ Symptômes | 💊 Traitement CI | 🛡️ Prévention | ⚠️ Quand aller à l'hôpital`));}
+  catch(e){show('r-m','❌ '+e.message);}spin('sp-m',false);
+}
+function qMal(n){document.getElementById('m-nom').value=n;go('mal',document.querySelectorAll('.nb')[2]);getMal();}
+async function getMed(){
+  const n=document.getElementById('med-nom').value.trim();const a=document.getElementById('med-age').value;
+  if(!n)return toast('Entrez un médicament.');
+  spin('sp-med',true);hide('r-med');
+  try{show('r-med',await callGroq(`Médicament: ${n}, Patient: ${a}\n💊 Indication | 📏 Posologie | ⚠️ Effets | 🚫 Contre-indications | 💰 Prix FCFA`));}
+  catch(e){show('r-med','❌ '+e.message);}spin('sp-med',false);
+}
+async function getPlante(){
+  const n=document.getElementById('pl-nom').value.trim();if(!n)return toast('Entrez une plante.');
+  spin('sp-pl',true);hide('r-pl');
+  try{show('r-pl',await callGroq(`Plante: ${n}\n🌿 Description | 💊 Propriétés | 🍵 Préparation | ⚠️ Précautions`));}
+  catch(e){show('r-pl','❌ '+e.message);}spin('sp-pl',false);
+}
+async function getMat(){
+  const s=getChips('c-mat')||'grossesse';const q=document.getElementById('mat-q').value;
+  spin('sp-mat',true);hide('r-mat');
+  try{show('r-mat',await callGroq(`Sujet: ${s}. Question: ${q||'conseils généraux'}\n✅ À faire | 🚫 À éviter | 💊 Médicaments sûrs | ⚠️ Alarmes`));}
+  catch(e){show('r-mat','❌ '+e.message);}spin('sp-mat',false);
+}
+async function getNut(){
+  const c=document.getElementById('nut-c').value;const r=document.getElementById('nut-r').value||"Côte d'Ivoire";
+  spin('sp-nut',true);hide('r-nut');
+  try{show('r-nut',await callGroq(`Condition: ${c}, Région: ${r}\n🥗 Aliments locaux | 🚫 À éviter | 💰 Budget FCFA/jour`));}
+  catch(e){show('r-nut','❌ '+e.message);}spin('sp-nut',false);
+}
+async function getUrg(){
+  const s=getChips('c-urg')||'arrêt cardiaque';
+  spin('sp-urg',true);hide('r-urg');
+  try{show('r-urg',await callGroq(`URGENCE: ${s}\n📞 Appeler 15 ou 185\n1.[action]\n2.[action]\n3.[action]\n🚫 NE PAS: [chose]`));}
+  catch(e){show('r-urg','❌ '+e.message);}spin('sp-urg',false);
+}
+
+let currentStar=0;
+function openRating(){document.getElementById('rating-modal').classList.add('on');}
+function closeRating(){document.getElementById('rating-modal').classList.remove('on');currentStar=0;document.querySelectorAll('.star').forEach(s=>s.classList.remove('on'));document.getElementById('r-comment').value='';}
+function rateStar(n){currentStar=n;document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('on',i<n));}
+function submitRating(){
+  if(!currentStar)return toast("Sélectionne une note d'abord ⭐");
+  const ratings=JSON.parse(localStorage.getItem('maf_ratings')||'[]');
+  ratings.push({stars:currentStar,comment:document.getElementById('r-comment').value.trim(),date:new Date().toISOString()});
+  localStorage.setItem('maf_ratings',JSON.stringify(ratings));
+  closeRating();toast('Merci pour ton avis ! 🙏');
+}
+
+window.addEventListener('online',()=>document.getElementById('offline-bar').classList.remove('show'));
+window.addEventListener('offline',()=>document.getElementById('offline-bar').classList.add('show'));
+
+window.onload=()=>{
+  setTimeout(()=>{const s=document.getElementById('splash');s.classList.add('hide');setTimeout(()=>s.style.display='none',500);},2000);
+  if(!navigator.onLine)document.getElementById('offline-bar').classList.add('show');
+  updatePh();setInterval(updatePh,60000);
+  const v=parseInt(localStorage.getItem('maf_v')||'0')+1;
+  localStorage.setItem('maf_v',v);
+  if(v===3)setTimeout(openRating,5000);
+};
+</script>
+</body>
+</html>
